@@ -1,0 +1,19 @@
+# Credenciales y configuración local
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# Salidas locales
+salidas/
+*.log
+.tools/
+.runtime/
+
+# Material exclusivo del docente
+**/solucion_docente/
+
+# Archivos del sistema y editores
+.DS_Store
+*~
