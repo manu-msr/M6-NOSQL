@@ -46,7 +46,7 @@ La cantidad puede comprobarse en la consola:
 bash setup/conectar.sh
 ```
 
-Cuando aparezca `m6_nosql>`, se ejecuta:
+Cuando aparezca `m6_nosql>` o `>`, se ejecuta:
 
 ```javascript
 db.polizas_indexacion_reto.countDocuments({})
@@ -171,9 +171,9 @@ No se requiere un reporte extenso ni una captura completa de todos los datos.
 
 ## Compatibilidad
 
-La evidencia se obtiene en MongoDB Community 7.0. No se debe atribuir el mismo
-plan ni las mismas métricas a Amazon DocumentDB sin ejecutar una comprobación
-independiente en ese motor.
+La evidencia se obtiene en MongoDB Community 4.4 o 7.0, según la imagen
+detectada. No se debe atribuir el mismo plan ni las mismas métricas a Amazon
+DocumentDB sin ejecutar una comprobación independiente en ese motor.
 
 ## Nota docente
 

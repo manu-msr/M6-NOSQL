@@ -117,7 +117,8 @@ Durante la primera ejecución, el proceso puede tardar algunos minutos porque
 realiza estas acciones:
 
 1. comprueba que la imagen Linux y el procesador sean compatibles;
-2. descarga MongoDB Community 7.0.24 y `mongosh` desde sus sitios oficiales;
+2. detecta la imagen y descarga una versión compatible desde el sitio oficial:
+   MongoDB 4.4.29 en Ubuntu 16.04 o MongoDB 7.0.24 en las imágenes modernas;
 3. guarda los programas en `.tools/bin` dentro del clon;
 4. inicia el servidor `mongod` en `127.0.0.1:27017`;
 5. carga las colecciones de trabajo en la base `m6_nosql`;
@@ -147,13 +148,17 @@ Desde `~/m6-nosql`, ejecuta:
 bash setup/conectar.sh
 ```
 
-El script confirma que `mongod` está activo y abre `mongosh` directamente en la
-base de trabajo. La conexión fue correcta cuando el indicador de la consola
-termina en:
+El script confirma que `mongod` está activo y abre la consola compatible
+directamente en la base de trabajo. En las imágenes modernas se utiliza
+`mongosh`; Ubuntu 16.04 utiliza la consola clásica `mongo` incluida en el
+paquete oficial. La conexión fue correcta cuando aparece un indicador como:
 
 ```text
 m6_nosql>
 ```
+
+En la consola clásica el indicador puede mostrarse únicamente como `>`. En
+ambos casos, `db.getName()` debe devolver `m6_nosql`.
 
 Escribe cada instrucción y presiona `Enter`:
 
@@ -170,7 +175,7 @@ Comprueba estos resultados:
 - `show collections` incluye `polizas`, `polizas_referencias`,
   `coberturas_poliza` y `siniestros`.
 
-Para cerrar `mongosh` y regresar a la terminal Bash, escribe:
+Para cerrar la consola de MongoDB y regresar a la terminal Bash, escribe:
 
 ```javascript
 exit
@@ -180,8 +185,8 @@ El cambio del indicador permite distinguir las dos consolas:
 
 - un indicador semejante a `usuario@equipo:~$` corresponde a Bash y acepta
   comandos como `cd`, `git` y `bash`;
-- `m6_nosql>` corresponde a `mongosh` y acepta consultas MongoDB como
-  `db.polizas.findOne()`.
+- `m6_nosql>` o `>` corresponde a la consola de MongoDB y acepta consultas
+  como `db.polizas.findOne()`.
 
 ## 6. Alcance de esta conexión
 

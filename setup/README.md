@@ -1,10 +1,12 @@
 # Preparación del entorno
 
 El Ejemplo 01 muestra, mediante una demostración docente, cómo preparar MongoDB
-Community 7.0 dentro del clon. En el Reto 01 cada estudiante repite la
-configuración en su propia instancia. La instalación, el servidor, la base y la
-consola funcionan en la terminal integrada del Learner Lab. Este directorio no
-crea clústeres, redes, usuarios o permisos de AWS.
+Community dentro del clon. En el Reto 01 cada estudiante repite la configuración
+en su propia instancia. El instalador detecta la imagen de Learner Lab y elige
+una versión compatible sin usar `sudo`: MongoDB 4.4.29 con la consola `mongo` en
+Ubuntu 16.04, o MongoDB 7.0.24 con `mongosh` en las imágenes modernas admitidas.
+La instalación, el servidor, la base y la consola funcionan en la terminal
+integrada. Este directorio no crea clústeres, redes, usuarios o permisos de AWS.
 
 Repositorio canónico: https://github.com/manu-msr/M6-NOSQL
 
@@ -12,8 +14,8 @@ Repositorio canónico: https://github.com/manu-msr/M6-NOSQL
 
 - el Learner Lab iniciado y su terminal integrada disponible;
 - el repositorio del curso clonado desde esa terminal;
-- arquitectura `x86_64` con AVX;
-- Ubuntu 20.04 o 22.04, Debian 11 o 12, Amazon Linux 2 o Amazon Linux 2023;
+- arquitectura `x86_64`; AVX sólo es necesario para MongoDB 7.0;
+- Ubuntu 16.04, 20.04 o 22.04; Debian 11 o 12; Amazon Linux 2 o 2023;
 - acceso HTTPS desde el laboratorio a los sitios oficiales de MongoDB.
 
 Consulta primero la
@@ -30,8 +32,8 @@ bash setup/setup.sh
 
 El script:
 
-1. llama a `instalar_herramientas.sh` para descargar MongoDB Community 7.0.24
-   y `mongosh`;
+1. llama a `instalar_herramientas.sh` para detectar el sistema y descargar la
+   versión de MongoDB y la consola compatibles;
 2. guarda los binarios en `.tools/bin`, una ruta excluida de Git;
 3. crea los datos y el registro del servidor en `.runtime/mongodb`;
 4. inicia `mongod` en `127.0.0.1:27017`;
@@ -49,8 +51,8 @@ Cuando `setup.sh` termine, ejecuta:
 bash setup/conectar.sh
 ```
 
-El indicador cambia a `m6_nosql>`. Dentro de esa consola, copia estas
-instrucciones una por una:
+Según la consola instalada, el indicador cambia a `m6_nosql>` o `>`. Dentro de
+esa consola, copia estas instrucciones una por una:
 
 ```javascript
 db.getName()

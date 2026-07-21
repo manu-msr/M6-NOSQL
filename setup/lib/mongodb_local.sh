@@ -34,7 +34,7 @@ mongodb_iniciar() {
   local intento
 
   if [ ! -x "$MONGOD_BIN" ] || [ ! -x "$MONGOSH_BIN" ]; then
-    echo "ERROR: faltan mongod o mongosh en $TOOLS_DIR." >&2
+    echo "ERROR: faltan MongoDB o su consola en $TOOLS_DIR." >&2
     echo "Ejecuta: bash setup/instalar_herramientas.sh" >&2
     return 1
   fi

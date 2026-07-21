@@ -49,7 +49,7 @@ La preparación puede comprobarse con:
 bash setup/conectar.sh
 ```
 
-Cuando aparezca `m6_nosql>`, se ejecuta:
+Cuando aparezca `m6_nosql>` o `>`, se ejecuta:
 
 ```javascript
 db.getCollectionInfos({ name: "siniestros_validacion_reto" })[0].options
@@ -160,9 +160,10 @@ No se requiere un reporte extenso ni se incluyen datos personales reales.
 
 ## Compatibilidad
 
-El reto se ejecuta y evalúa sobre MongoDB Community 7.0. No se presupone que
-Amazon DocumentDB admita la misma configuración o devuelva el mismo detalle de
-errores; cualquier traslado requiere verificación independiente.
+El reto se ejecuta y evalúa sobre MongoDB Community 4.4 o 7.0, según la imagen
+detectada. No se presupone que Amazon DocumentDB admita la misma configuración
+o devuelva el mismo detalle de errores; cualquier traslado requiere
+verificación independiente.
 
 ## Nota docente
 

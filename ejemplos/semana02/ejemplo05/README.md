@@ -71,7 +71,8 @@ cambió la disponibilidad del índice.
 
 ## 7. Resultado esperado
 
-En MongoDB Community 7.0 con los datos del curso, el resumen muestra:
+Con la versión de MongoDB Community instalada por `setup.sh` y los datos del
+curso, el resumen muestra:
 
 | Indicador | Antes | Después |
 |---|---:|---:|
@@ -98,6 +99,7 @@ esta demostración.
 
 ## Compatibilidad
 
-La demostración se ejecuta sobre MongoDB Community 7.0. Un plan obtenido aquí no
-debe presentarse como evidencia de Amazon DocumentDB: el árbol de etapas y las
-métricas deben comprobarse en el motor donde se ejecutará la consulta.
+La demostración se ejecuta sobre MongoDB Community 4.4 o 7.0, según la imagen
+detectada. Un plan obtenido aquí no debe presentarse como evidencia de Amazon
+DocumentDB: el árbol de etapas y las métricas deben comprobarse en el motor
+donde se ejecutará la consulta.

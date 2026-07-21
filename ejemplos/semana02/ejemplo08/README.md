@@ -88,6 +88,6 @@ el validador, ejecutar casos positivos y negativos e interpretar cada rechazo.
 
 ## Compatibilidad
 
-El ejemplo se ejecuta sobre MongoDB Community 7.0. Las capacidades de validación
-y el detalle de los errores deben comprobarse por separado antes de trasladar la
-solución a Amazon DocumentDB.
+El ejemplo utiliza capacidades de validación disponibles en MongoDB Community
+4.4 y 7.0. El detalle de los errores debe comprobarse por separado antes de
+trasladar la solución a Amazon DocumentDB.

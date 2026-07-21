@@ -66,7 +66,7 @@ Abre la consola:
 bash setup/conectar.sh
 ```
 
-Cuando aparezca el indicador `m6_nosql>`, ejecuta:
+Cuando aparezca el indicador `m6_nosql>` o `>`, ejecuta:
 
 ```javascript
 db.getName()

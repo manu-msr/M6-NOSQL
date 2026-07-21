@@ -108,9 +108,10 @@ construye un pipeline y se documenta la interpretación; esta carpeta conserva
 
 #### Compatibilidad
 
-La demostración se ejecuta sobre MongoDB Community 7.0. Utiliza la forma básica
-de `$lookup` con `localField` y `foreignField`, además de `$unwind`, `$group`,
-`$addFields`, `$project` y `$sort`.
+La demostración se ejecuta sobre la versión de MongoDB Community seleccionada
+por `setup.sh`. Utiliza la forma básica de `$lookup` con `localField` y
+`foreignField`, además de `$unwind`, `$group`, `$addFields`, `$project` y
+`$sort`; todas estas operaciones están disponibles en 4.4 y 7.0.
 
 <br/>
 

@@ -7,7 +7,7 @@ ROOT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 
 echo "Preparación del entorno desde la terminal integrada de Learner Lab."
 
-echo "1/4 Instalando MongoDB y mongosh dentro del clon..."
+echo "1/4 Instalando MongoDB y la consola compatible dentro del clon..."
 bash "$ROOT_DIR/setup/instalar_herramientas.sh"
 
 echo "2/4 Iniciando el servidor MongoDB local..."

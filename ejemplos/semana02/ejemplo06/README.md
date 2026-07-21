@@ -94,6 +94,7 @@ patrón consulte un arreglo.
 
 ## Compatibilidad
 
-El script se ejecuta sobre MongoDB Community 7.0. La selección del índice, el
-árbol del plan y la ausencia o presencia de `SORT` deben comprobarse nuevamente
-si la consulta se traslada a Amazon DocumentDB.
+El script se ejecuta sobre MongoDB Community 4.4 o 7.0, según la imagen
+detectada. La selección del índice, el árbol del plan y la ausencia o presencia
+de `SORT` deben comprobarse nuevamente si la consulta se traslada a Amazon
+DocumentDB.

@@ -11,21 +11,23 @@
       `127.0.0.1:27017`.
 - [ ] La carga termina con 6 pólizas, 15 coberturas separadas y 10 siniestros.
 - [ ] El último mensaje informa `Preparación completa`.
-- [ ] `bash setup/conectar.sh` abre un indicador terminado en `m6_nosql>`.
+- [ ] `bash setup/conectar.sh` abre un indicador `m6_nosql>` o `>`.
 - [ ] `db.runCommand({ ping: 1 })` devuelve un resultado con `ok: 1`.
 
 ## Interpretación de errores frecuentes
 
 ### La imagen no es compatible
 
-El instalador muestra el sistema y la arquitectura detectados. Copia el mensaje
-completo y comunícalo al docente. No uses `sudo`, no instales otra versión por
-tu cuenta y no traslades la actividad a una computadora personal.
+El instalador admite Ubuntu 16.04 mediante MongoDB 4.4.29 y selecciona MongoDB
+7.0.24 en las imágenes modernas configuradas. Si muestra este error, copia el
+mensaje completo y comunícalo al docente. No uses `sudo`, no instales otra
+versión por tu cuenta y no traslades la actividad a una computadora personal.
 
 ### El procesador no informa AVX
 
-MongoDB 7.0 requiere AVX en equipos `x86_64`. Copia el mensaje completo y
-comunícalo al docente; esta condición depende de la imagen del Learner Lab.
+MongoDB 7.0 requiere AVX en equipos `x86_64`; la ruta compatible de Ubuntu
+16.04 usa MongoDB 4.4 y no realiza esta comprobación. Si aparece el error, copia
+el mensaje completo y comunícalo al docente; la condición depende de la imagen.
 
 ### Falla la descarga o la suma SHA-256
 
@@ -62,8 +64,8 @@ Copia esa salida y comunícala al docente. No abras el puerto ni cambies
 
 ### `MongoNetworkError: connect ECONNREFUSED`
 
-La consola no encontró un servidor activo. Regresa a Bash si el indicador
-termina en `m6_nosql>` escribiendo `exit`. Después ejecuta:
+La consola no encontró un servidor activo. Regresa a Bash si el indicador es
+`m6_nosql>` o `>` escribiendo `exit`. Después ejecuta:
 
 ```bash
 bash setup/setup.sh

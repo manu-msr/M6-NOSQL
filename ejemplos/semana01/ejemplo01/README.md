@@ -75,8 +75,9 @@ El docente abrirá la consola con:
 bash setup/conectar.sh
 ```
 
-El indicador cambiará a `m6_nosql>`. Esto permite reconocer que las siguientes
-instrucciones pertenecen a MongoDB y no a Bash:
+El indicador cambiará a `m6_nosql>` o, en la consola clásica, a `>`. Esto
+permite reconocer que las siguientes instrucciones pertenecen a MongoDB y no a
+Bash:
 
 ```javascript
 db.getName()
@@ -104,10 +105,11 @@ siniestros, y mostrar la estructura de `POL-1001`.
 
 #### Interpretación
 
-La terminal Bash administra el entorno y ejecuta archivos; la consola
-`mongosh` permite consultar MongoDB. La base se ejecuta dentro de la instancia
-individual del Learner Lab y utiliza datos sintéticos. Esta configuración es
-didáctica y no representa una instalación de producción.
+La terminal Bash administra el entorno y ejecuta archivos; la consola de
+MongoDB permite consultar la base. El instalador usa `mongosh` en imágenes
+modernas y la consola clásica `mongo` en Ubuntu 16.04. La base se ejecuta dentro
+de la instancia individual del Learner Lab y utiliza datos sintéticos. Esta
+configuración es didáctica y no representa una instalación de producción.
 
 #### Relación con el Reto 01
 

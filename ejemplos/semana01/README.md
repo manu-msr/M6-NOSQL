@@ -28,7 +28,8 @@ El docente mostrará cómo entrar al Learner Lab, reconocer la terminal, obtener
 el repositorio, ejecutar la configuración y abrir la consola de MongoDB. La
 demostración terminará verificando la base `m6_nosql`, sus colecciones y la
 estructura de un documento. Durante este ejemplo sólo necesitas observar el
-recorrido y distinguir los comandos de Bash de las instrucciones de `mongosh`.
+recorrido y distinguir los comandos de Bash de las instrucciones de la consola
+de MongoDB.
 
 - [**`EJEMPLO 01`**](ejemplo01/README.md)
 

@@ -52,7 +52,7 @@ La carga se comprueba en la consola de MongoDB con:
 bash setup/conectar.sh
 ```
 
-Cuando aparezca `m6_nosql>`, se ejecuta una línea a la vez:
+Cuando aparezca `m6_nosql>` o `>`, se ejecuta una línea a la vez:
 
 ```javascript
 db.polizas_agregacion_reto.countDocuments({})

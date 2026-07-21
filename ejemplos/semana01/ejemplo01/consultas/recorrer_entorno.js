@@ -15,7 +15,7 @@ printjson(
   coleccionesBase.map(function (nombre) {
     return {
       coleccion: nombre,
-      disponible: coleccionesDisponibles.includes(nombre)
+      disponible: coleccionesDisponibles.indexOf(nombre) !== -1
     };
   })
 );

@@ -104,8 +104,9 @@ construir y explicar una solución se encuentra exclusivamente en el reto.
 
 #### Compatibilidad
 
-La demostración se ejecuta sobre MongoDB Community 7.0 y utiliza las etapas
-básicas `$match`, `$project` y `$sort`.
+La demostración se ejecuta sobre la versión de MongoDB Community seleccionada
+por `setup.sh` y utiliza las etapas básicas `$match`, `$project` y `$sort`,
+disponibles tanto en 4.4 como en 7.0.
 
 <br/>
 

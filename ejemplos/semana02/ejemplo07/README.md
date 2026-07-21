@@ -89,6 +89,6 @@ opcional. También solicita documentar qué regla explica cada resultado de prue
 
 ## Compatibilidad
 
-La demostración está diseñada y comprobada para MongoDB Community 7.0. No se
-asume que el mismo validador o sus mensajes de error tengan comportamiento
+La demostración utiliza capacidades disponibles en MongoDB Community 4.4 y 7.0.
+No se asume que el mismo validador o sus mensajes de error tengan comportamiento
 idéntico en Amazon DocumentDB; la capacidad debe verificarse antes de trasladarlo.

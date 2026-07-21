@@ -4,7 +4,6 @@ set -eu
 ROOT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 TOOLS_DIR="$ROOT_DIR/.tools/bin"
 TMP_DIR=$(mktemp -d)
-MONGODB_VERSION="7.0.24"
 
 cleanup() {
   rm -rf "$TMP_DIR"
@@ -13,6 +12,55 @@ trap cleanup EXIT HUP INT TERM
 
 mkdir -p "$TOOLS_DIR"
 
+if [ ! -r /etc/os-release ]; then
+  echo "ERROR: no se pudo identificar el sistema operativo." >&2
+  exit 1
+fi
+
+# shellcheck disable=SC1091
+. /etc/os-release
+
+arquitectura=$(uname -m)
+if [ "$arquitectura" != "x86_64" ]; then
+  echo "ERROR: este instalador requiere arquitectura x86_64." >&2
+  echo "Arquitectura detectada: $arquitectura" >&2
+  exit 1
+fi
+
+plataforma=""
+tipo_shell="mongosh"
+MONGODB_VERSION="7.0.24"
+
+case "${ID:-}:${VERSION_ID:-}" in
+  ubuntu:16.04)
+    # La imagen actual de Learner Lab usa Ubuntu 16.04. MongoDB 4.4 es la
+    # última rama con un paquete oficial para esta distribución e incluye el
+    # shell mongo compatible con los ejercicios del curso.
+    plataforma="ubuntu1604"
+    tipo_shell="mongo"
+    MONGODB_VERSION="4.4.29"
+    ;;
+  ubuntu:20.04) plataforma="ubuntu2004" ;;
+  ubuntu:22.04) plataforma="ubuntu2204" ;;
+  debian:11) plataforma="debian11" ;;
+  debian:12) plataforma="debian12" ;;
+  amzn:2) plataforma="amazon2" ;;
+  amzn:2023) plataforma="amazon2023" ;;
+esac
+
+if [ -z "$plataforma" ]; then
+  echo "ERROR: MongoDB no está configurado para esta imagen." >&2
+  echo "Sistema detectado: ${PRETTY_NAME:-desconocido}" >&2
+  echo "Copia este mensaje y comunícalo al docente." >&2
+  exit 1
+fi
+
+if [ "$MONGODB_VERSION" = "7.0.24" ] && ! grep -qw avx /proc/cpuinfo; then
+  echo "ERROR: el procesador no informa soporte para AVX." >&2
+  echo "MongoDB 7.0 requiere AVX para ejecutarse en x86_64." >&2
+  exit 1
+fi
+
 servidor_instalado=false
 if [ -x "$TOOLS_DIR/mongod" ] && \
    "$TOOLS_DIR/mongod" --version 2>/dev/null | grep -q "v$MONGODB_VERSION"; then
@@ -20,19 +68,24 @@ if [ -x "$TOOLS_DIR/mongod" ] && \
 fi
 
 shell_instalado=false
-if [ -x "$TOOLS_DIR/mongosh" ] && \
-   "$TOOLS_DIR/mongosh" --version >/dev/null 2>&1; then
-  shell_instalado=true
+if [ -x "$TOOLS_DIR/mongosh" ]; then
+  if [ "$tipo_shell" = "mongo" ]; then
+    if "$TOOLS_DIR/mongosh" --version 2>&1 | grep -q "v$MONGODB_VERSION"; then
+      shell_instalado=true
+    fi
+  elif "$TOOLS_DIR/mongosh" --version 2>/dev/null | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+'; then
+    shell_instalado=true
+  fi
 fi
 
 if [ "$servidor_instalado" = true ] && [ "$shell_instalado" = true ]; then
-  echo "MongoDB y mongosh ya están instalados dentro del clon."
+  echo "MongoDB y la consola ya están instalados dentro del clon."
   "$TOOLS_DIR/mongod" --version | sed -n '1p'
   "$TOOLS_DIR/mongosh" --version
   exit 0
 fi
 
-for herramienta in curl jq tar gzip sha256sum install; do
+for herramienta in curl tar gzip sha256sum install; do
   if ! command -v "$herramienta" >/dev/null 2>&1; then
     echo "ERROR: la imagen de Learner Lab no incluye $herramienta." >&2
     echo "Copia este mensaje y comunícalo al docente." >&2
@@ -41,48 +94,20 @@ for herramienta in curl jq tar gzip sha256sum install; do
 done
 
 echo "Instalación dentro del clon ubicado en Learner Lab."
+echo "Sistema detectado: ${PRETTY_NAME:-desconocido}."
+echo "Versión compatible seleccionada: MongoDB Community $MONGODB_VERSION."
 
-if [ "$servidor_instalado" = false ]; then
-  arquitectura=$(uname -m)
-  if [ "$arquitectura" != "x86_64" ]; then
-    echo "ERROR: esta versión del instalador requiere arquitectura x86_64." >&2
-    echo "Arquitectura detectada: $arquitectura" >&2
-    exit 1
-  fi
+paquete="mongodb-linux-x86_64-${plataforma}-${MONGODB_VERSION}.tgz"
+ruta_paquete="$TMP_DIR/${paquete%.tgz}"
+url="https://fastdl.mongodb.org/linux/$paquete"
+paquete_necesario=false
 
-  if ! grep -qw avx /proc/cpuinfo; then
-    echo "ERROR: el procesador no informa soporte para AVX." >&2
-    echo "MongoDB 7.0 requiere AVX para ejecutarse en x86_64." >&2
-    exit 1
-  fi
+if [ "$servidor_instalado" = false ] || \
+   { [ "$tipo_shell" = "mongo" ] && [ "$shell_instalado" = false ]; }; then
+  paquete_necesario=true
+fi
 
-  if [ ! -r /etc/os-release ]; then
-    echo "ERROR: no se pudo identificar el sistema operativo." >&2
-    exit 1
-  fi
-
-  # shellcheck disable=SC1091
-  . /etc/os-release
-  plataforma=""
-  case "${ID:-}:${VERSION_ID:-}" in
-    ubuntu:20.04) plataforma="ubuntu2004" ;;
-    ubuntu:22.04) plataforma="ubuntu2204" ;;
-    debian:11) plataforma="debian11" ;;
-    debian:12) plataforma="debian12" ;;
-    amzn:2) plataforma="amazon2" ;;
-    amzn:2023) plataforma="amazon2023" ;;
-  esac
-
-  if [ -z "$plataforma" ]; then
-    echo "ERROR: MongoDB 7.0 no está configurado para esta imagen." >&2
-    echo "Sistema detectado: ${PRETTY_NAME:-desconocido}" >&2
-    echo "Copia este mensaje y comunícalo al docente." >&2
-    exit 1
-  fi
-
-  paquete="mongodb-linux-x86_64-${plataforma}-${MONGODB_VERSION}.tgz"
-  url="https://fastdl.mongodb.org/linux/$paquete"
-
+if [ "$paquete_necesario" = true ]; then
   echo "1/2 Descargando MongoDB Community $MONGODB_VERSION para $plataforma..."
   curl -fsSL "$url" -o "$TMP_DIR/$paquete"
   curl -fsSL "$url.sha256" -o "$TMP_DIR/$paquete.sha256"
@@ -91,14 +116,24 @@ if [ "$servidor_instalado" = false ]; then
     sha256sum -c "$paquete.sha256"
   )
   tar -xzf "$TMP_DIR/$paquete" -C "$TMP_DIR"
-  install -m 0755 \
-    "$TMP_DIR/${paquete%.tgz}/bin/mongod" \
-    "$TOOLS_DIR/mongod"
 else
   echo "1/2 MongoDB Community $MONGODB_VERSION ya está instalado."
 fi
 
-if [ "$shell_instalado" = false ]; then
+if [ "$servidor_instalado" = false ]; then
+  install -m 0755 "$ruta_paquete/bin/mongod" "$TOOLS_DIR/mongod"
+fi
+
+if [ "$tipo_shell" = "mongo" ]; then
+  if [ "$shell_instalado" = false ]; then
+    echo "2/2 Instalando la consola compatible incluida en MongoDB 4.4..."
+    # El nombre local se conserva para que conectar.sh y los materiales usen
+    # la misma ruta en todas las imágenes de Learner Lab.
+    install -m 0755 "$ruta_paquete/bin/mongo" "$TOOLS_DIR/mongosh"
+  else
+    echo "2/2 La consola compatible ya está instalada."
+  fi
+elif [ "$shell_instalado" = false ]; then
   echo "2/2 Descargando mongosh desde el instalador oficial de MongoDB..."
   curl -fsSL \
     https://raw.githubusercontent.com/mongodb-js/mongosh/refs/heads/main/download_latest.sh \
