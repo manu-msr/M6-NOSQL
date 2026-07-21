@@ -17,7 +17,7 @@
 - Haber revisado la Nota 02.
 - Continuar en la terminal integrada del Learner Lab.
 - Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
-  `bash setup/setup.sh` desde la carpeta `repositorio`.
+  `bash setup/setup.sh` desde la raíz del repositorio.
 
 ### 3. Desarrollo :rocket:
 
@@ -42,12 +42,12 @@ Desde la terminal Bash del Learner Lab, las siguientes líneas sitúan la sesió
 en la carpeta correcta y ejecutan el ejemplo:
 
 ```bash
-cd ~/m6-nosql/repositorio
+cd ~/m6-nosql
 pwd
 bash ejemplos/semana01/ejemplo03/scripts/ejecutar.sh
 ```
 
-`pwd` debe mostrar una ruta terminada en `/m6-nosql/repositorio`. El lanzador
+`pwd` debe mostrar una ruta terminada en `/m6-nosql`. El lanzador
 inicia MongoDB si fuera necesario, restablece los datos base y ejecuta
 [`consultas/filtrar_proyectar_ordenar.js`](consultas/filtrar_proyectar_ordenar.js).
 

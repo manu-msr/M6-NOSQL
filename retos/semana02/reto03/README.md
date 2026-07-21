@@ -10,7 +10,7 @@ que atienda sus patrones y comprobarla mediante métricas antes y después.
 - Haber revisado la Nota 03 y las demostraciones de los ejemplos 05 y 06.
 - Continuar en la terminal integrada del Learner Lab.
 - Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
-  `bash setup/setup.sh` desde la carpeta `repositorio`.
+  `bash setup/setup.sh` desde la raíz del repositorio.
 
 ## 3. Situación
 
@@ -32,12 +32,12 @@ atender dos patrones y reconocer cuándo se necesita un índice multikey.
 Desde la terminal Bash del Learner Lab:
 
 ```bash
-cd ~/m6-nosql/repositorio
+cd ~/m6-nosql
 pwd
 bash retos/semana02/reto03/scripts/cargar_datos.sh
 ```
 
-`pwd` debe terminar en `/m6-nosql/repositorio`. La salida debe confirmar 240
+`pwd` debe terminar en `/m6-nosql`. La salida debe confirmar 240
 pólizas y que sólo existe el índice `_id_`.
 
 La cantidad puede comprobarse en la consola:
@@ -57,7 +57,7 @@ Las respuestas deben mostrar `240` y el índice `_id_`. `exit` cierra la consola
 
 ## 5. Analizar los planes iniciales
 
-Desde la raíz de `repositorio`:
+Desde la raíz del repositorio:
 
 ```bash
 ./.tools/bin/mongosh \
@@ -110,7 +110,7 @@ los patrones de claves; no se modifican las consultas ni el código de medición
 
 ## 8. Ejecutar y comprobar la estrategia
 
-Desde la raíz de `repositorio`:
+Desde la raíz del repositorio:
 
 ```bash
 ./.tools/bin/mongosh \

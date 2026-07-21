@@ -17,7 +17,7 @@
 - Haber revisado la Nota 02 y el Ejemplo 03.
 - Continuar en la terminal integrada del Learner Lab con el repositorio
   `https://github.com/manu-msr/M6-NOSQL` ya clonado.
-- Haber ejecutado `bash setup/setup.sh` desde la carpeta `repositorio`.
+- Haber ejecutado `bash setup/setup.sh` desde la raíz del repositorio.
 
 ### 3. Desarrollo :rocket:
 
@@ -39,12 +39,12 @@ ejecución.
 Desde la terminal Bash del Learner Lab, el ejemplo se ejecuta con estas líneas:
 
 ```bash
-cd ~/m6-nosql/repositorio
+cd ~/m6-nosql
 pwd
 bash ejemplos/semana01/ejemplo04/scripts/ejecutar.sh
 ```
 
-`pwd` debe terminar en `/m6-nosql/repositorio`. El lanzador ejecuta
+`pwd` debe terminar en `/m6-nosql`. El lanzador ejecuta
 [`consultas/resumir_por_producto_cobertura.js`](consultas/resumir_por_producto_cobertura.js)
 después de comprobar MongoDB y restablecer los datos.
 

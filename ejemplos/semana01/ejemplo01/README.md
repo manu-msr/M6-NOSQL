@@ -42,18 +42,18 @@ repositorio:
 ```bash
 cd ~
 git clone https://github.com/manu-msr/M6-NOSQL.git m6-nosql
-cd m6-nosql/repositorio
+cd m6-nosql
 pwd
 ls
 ```
 
 `pwd` permite comprobar la ubicación actual. La ruta debe terminar en
-`/m6-nosql/repositorio`; con `ls` deben aparecer las carpetas `datos`,
+`/m6-nosql`; con `ls` deben aparecer las carpetas `datos`,
 `ejemplos`, `retos` y `setup`.
 
 #### Paso 3. Configurar MongoDB
 
-La configuración se inicia desde la raíz de `repositorio`:
+La configuración se inicia desde la raíz del repositorio:
 
 ```bash
 bash setup/setup.sh

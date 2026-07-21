@@ -32,24 +32,23 @@ entras, ejecuta una línea a la vez:
 ```bash
 cd ~
 git clone https://github.com/manu-msr/M6-NOSQL.git m6-nosql
-cd m6-nosql/repositorio
+cd m6-nosql
 pwd
 ```
 
-La ruta mostrada por `pwd` debe terminar en `/m6-nosql/repositorio`.
+La ruta mostrada por `pwd` debe terminar en `/m6-nosql`.
 
 Si el repositorio ya existe, actualízalo en lugar de volver a clonarlo:
 
 ```bash
 cd ~/m6-nosql
 git pull --ff-only
-cd repositorio
 pwd
 ```
 
 #### Parte B. Configurar y comprobar MongoDB
 
-Desde la carpeta `repositorio`, ejecuta:
+Desde la raíz del repositorio, ejecuta:
 
 ```bash
 bash setup/setup.sh
@@ -103,7 +102,7 @@ En `nano`, guarda con `Ctrl+O`, confirma con `Enter` y cierra con `Ctrl+X`.
 
 #### Parte D. Ejecutar y revisar
 
-Ejecuta tu archivo desde la raíz de `repositorio`:
+Ejecuta tu archivo desde la raíz del repositorio:
 
 ```bash
 ./.tools/bin/mongosh \

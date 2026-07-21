@@ -6,7 +6,7 @@
 - [ ] La terminal usada es la terminal integrada del Learner Lab, no una
       terminal personal.
 - [ ] El repositorio se clonó dentro del laboratorio y la terminal se encuentra
-      en la raíz de `repositorio`.
+      en la raíz del repositorio.
 - [ ] `bash setup/setup.sh` informa que MongoDB está activo en
       `127.0.0.1:27017`.
 - [ ] La carga termina con 6 pólizas, 15 coberturas separadas y 10 siniestros.
@@ -40,13 +40,12 @@ error se repite, copia el mensaje completo y comunícalo al docente.
 
 ### `No se encontró un archivo necesario`
 
-Comprueba que `pwd` termine en `/m6-nosql/repositorio` y que `ls` muestre
+Comprueba que `pwd` termine en `/m6-nosql` y que `ls` muestre
 `datos`, `ejemplos`, `retos` y `setup`. Si la copia ya existía, actualízala:
 
 ```bash
 cd ~/m6-nosql
 git pull --ff-only
-cd repositorio
 bash setup/setup.sh
 ```
 

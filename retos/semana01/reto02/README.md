@@ -15,7 +15,7 @@
 - Haber revisado la Nota 02 y las demostraciones de los ejemplos 03 y 04.
 - Continuar en la terminal integrada del Learner Lab.
 - Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
-  `bash setup/setup.sh` desde la carpeta `repositorio`.
+  `bash setup/setup.sh` desde la raíz del repositorio.
 
 ### 3. Desarrollo :rocket:
 
@@ -38,12 +38,12 @@ Desde la terminal Bash del Learner Lab, las siguientes líneas entran a la
 carpeta correcta y cargan los datos exclusivos del reto:
 
 ```bash
-cd ~/m6-nosql/repositorio
+cd ~/m6-nosql
 pwd
 bash retos/semana01/reto02/scripts/cargar_datos.sh
 ```
 
-`pwd` debe mostrar una ruta terminada en `/m6-nosql/repositorio`. La salida del
+`pwd` debe mostrar una ruta terminada en `/m6-nosql`. La salida del
 lanzador debe confirmar 5 pólizas y 8 siniestros.
 
 La carga se comprueba en la consola de MongoDB con:
@@ -64,7 +64,7 @@ Las respuestas esperadas son `5` y `8`. La instrucción `exit` seguida de
 
 #### Preparación de los archivos de trabajo
 
-Desde `/m6-nosql/repositorio`, estas líneas crean copias editables de las
+Desde `~/m6-nosql`, estas líneas crean copias editables de las
 plantillas:
 
 ```bash
@@ -118,7 +118,7 @@ operadores de semanas posteriores.
 
 #### Ejecución y comprobación
 
-Desde la raíz de `repositorio`, el archivo terminado se ejecuta con:
+Desde la raíz del repositorio, el archivo terminado se ejecuta con:
 
 ```bash
 ./.tools/bin/mongosh \

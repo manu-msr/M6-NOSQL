@@ -13,7 +13,7 @@
 - Haber revisado la Nota 04 y el Ejemplo 07.
 - Continuar en la terminal integrada del Learner Lab con el repositorio
   `https://github.com/manu-msr/M6-NOSQL` ya clonado.
-- Haber ejecutado `bash setup/setup.sh` desde la carpeta `repositorio`.
+- Haber ejecutado `bash setup/setup.sh` desde la raíz del repositorio.
 
 ## 3. Contexto del problema
 
@@ -33,7 +33,7 @@ modifican la colección base `polizas`.
 Desde la terminal Bash del Learner Lab:
 
 ```bash
-cd ~/m6-nosql/repositorio
+cd ~/m6-nosql
 pwd
 bash ejemplos/semana02/ejemplo08/scripts/ejecutar.sh
 ```

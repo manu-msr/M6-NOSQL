@@ -12,7 +12,7 @@
 - Haber revisado la Nota 03.
 - Continuar en la terminal integrada del Learner Lab.
 - Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
-  `bash setup/setup.sh` desde la carpeta `repositorio`.
+  `bash setup/setup.sh` desde la raíz del repositorio.
 
 ## 3. Contexto del problema
 
@@ -34,12 +34,12 @@ para que la primera medición comience sin la estructura que se evaluará.
 Desde la terminal Bash del Learner Lab:
 
 ```bash
-cd ~/m6-nosql/repositorio
+cd ~/m6-nosql
 pwd
 bash ejemplos/semana02/ejemplo05/scripts/ejecutar.sh
 ```
 
-`pwd` debe mostrar una ruta terminada en `/m6-nosql/repositorio`. El lanzador
+`pwd` debe mostrar una ruta terminada en `/m6-nosql`. El lanzador
 ejecuta
 [`consultas/comparar_antes_despues.js`](consultas/comparar_antes_despues.js)
 después de iniciar MongoDB y restablecer los datos base.

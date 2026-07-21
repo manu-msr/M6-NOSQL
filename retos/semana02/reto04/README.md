@@ -10,7 +10,7 @@ funcionamiento mediante documentos válidos e inválidos.
 - Haber revisado la Nota 04 y las demostraciones de los ejemplos 07 y 08.
 - Continuar en la terminal integrada del Learner Lab.
 - Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
-  `bash setup/setup.sh` desde la carpeta `repositorio`.
+  `bash setup/setup.sh` desde la raíz del repositorio.
 
 ## 3. Situación
 
@@ -35,12 +35,12 @@ La regla se incorporará a una colección ya creada mediante `collMod`, con nive
 Desde la terminal Bash del Learner Lab:
 
 ```bash
-cd ~/m6-nosql/repositorio
+cd ~/m6-nosql
 pwd
 bash retos/semana02/reto04/scripts/cargar_datos.sh
 ```
 
-`pwd` debe terminar en `/m6-nosql/repositorio`. El lanzador crea una colección
+`pwd` debe terminar en `/m6-nosql`. El lanzador crea una colección
 vacía, sin validador, para que la regla se incorpore durante el reto.
 
 La preparación puede comprobarse con:
@@ -59,7 +59,7 @@ La salida inicial no debe contener `validator`. `exit` cierra la consola.
 
 ## 5. Preparar los archivos de trabajo
 
-Desde la raíz de `repositorio`:
+Desde la raíz del repositorio:
 
 ```bash
 cp retos/semana02/reto04/plantilla_validador.js \
@@ -98,7 +98,7 @@ ejecución anterior y realiza ocho pruebas sin modificar sus casos.
 
 ## 7. Ejecutar y comprobar
 
-Desde la raíz de `repositorio`:
+Desde la raíz del repositorio:
 
 ```bash
 ./.tools/bin/mongosh \

@@ -39,7 +39,7 @@ documentos; utilizaremos consultas directas.
 Desde Bash, el docente ejecutará:
 
 ```bash
-cd ~/m6-nosql/repositorio
+cd ~/m6-nosql
 bash ejemplos/semana01/ejemplo02/scripts/ejecutar.sh
 ```
 

@@ -22,7 +22,7 @@ comandos exactos para crear y verificar la copia del repositorio.
 
 ## Ejecución completa
 
-Desde la raíz de `repositorio`, copia y ejecuta:
+Desde la raíz del repositorio, copia y ejecuta:
 
 ```bash
 bash setup/setup.sh

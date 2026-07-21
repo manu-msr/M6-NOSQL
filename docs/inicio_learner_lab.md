@@ -31,7 +31,7 @@ línea a la vez**. Presiona `Enter` después de cada línea:
 ```bash
 cd ~
 git clone https://github.com/manu-msr/M6-NOSQL.git m6-nosql
-cd m6-nosql/repositorio
+cd m6-nosql
 pwd
 ls
 ```
@@ -40,8 +40,8 @@ ls
 |---|---|---|
 | `cd ~` | Te coloca en tu directorio de trabajo dentro del laboratorio. | No aparece un mensaje de error. |
 | `git clone https://github.com/manu-msr/M6-NOSQL.git m6-nosql` | Copia los archivos y llama `m6-nosql` a la nueva carpeta. | Aparece un mensaje semejante a `Cloning into 'm6-nosql'`. |
-| `cd m6-nosql/repositorio` | Entra a la carpeta técnica del curso. | No aparece un mensaje de error. |
-| `pwd` | Muestra la carpeta en la que estás. | La ruta termina en `/m6-nosql/repositorio`. |
+| `cd m6-nosql` | Entra a la carpeta técnica del curso. | No aparece un mensaje de error. |
+| `pwd` | Muestra la carpeta en la que estás. | La ruta termina en `/m6-nosql`. |
 | `ls` | Muestra los archivos y carpetas disponibles. | Aparecen `README.md`, `datos`, `ejemplos`, `retos` y `setup`. |
 
 El repositorio es público, por lo que `git clone` no debe solicitar usuario ni
@@ -56,19 +56,37 @@ inicio de este apartado y copia nuevamente el comando completo de `git clone`.
 Si el error persiste, comunica el mensaje al docente; no introduzcas tu
 contraseña de AWS en la terminal.
 
+### Si aparece `remote HEAD refers to nonexistent ref`
+
+Ese aviso indica que Git descargó los archivos internos del repositorio, pero
+no seleccionó automáticamente la rama de trabajo. No repitas `git clone`,
+porque la carpeta `m6-nosql` ya fue creada. Recupérala con:
+
+```bash
+cd ~/m6-nosql
+git fetch origin
+git checkout -b main origin/main
+pwd
+ls
+```
+
+Al final, `pwd` debe terminar en `/m6-nosql` y `ls` debe mostrar `README.md`,
+`datos`, `ejemplos`, `retos` y `setup`.
+
 ### Si aparece `destination path 'm6-nosql' already exists`
 
-Ese mensaje significa que ya existe una copia. No vuelvas a clonarla. Ejecuta:
+Ese mensaje significa que ya existe una copia. Si el primer intento también
+mostró `remote HEAD refers to nonexistent ref`, utiliza la recuperación del
+apartado anterior. En cualquier otro caso, no vuelvas a clonar y ejecuta:
 
 ```bash
 cd ~/m6-nosql
 git pull --ff-only
-cd repositorio
 pwd
 ```
 
 `git pull --ff-only` actualiza tu copia con los cambios publicados. Al final,
-`pwd` debe mostrar una ruta terminada en `/m6-nosql/repositorio`.
+`pwd` debe mostrar una ruta terminada en `/m6-nosql`.
 
 ## 3. Regresar al repositorio en una sesión posterior
 
@@ -77,7 +95,6 @@ Después de iniciar nuevamente el Learner Lab, ejecuta una línea a la vez:
 ```bash
 cd ~/m6-nosql
 git pull --ff-only
-cd repositorio
 pwd
 ls
 ```
@@ -89,7 +106,7 @@ sesiones depende de la configuración efectiva del laboratorio.
 ## 4. Instalar MongoDB y preparar la base
 
 Ejecuta `pwd` y comprueba que la ruta termine en
-`/m6-nosql/repositorio`. Desde esa carpeta, copia el siguiente comando y
+`/m6-nosql`. Desde esa carpeta, copia el siguiente comando y
 presiona `Enter`:
 
 ```bash
@@ -124,7 +141,7 @@ colecciones base.
 
 ## 5. Abrir la consola y comprobar la conexión
 
-Desde `~/m6-nosql/repositorio`, ejecuta:
+Desde `~/m6-nosql`, ejecuta:
 
 ```bash
 bash setup/conectar.sh

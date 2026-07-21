@@ -12,7 +12,7 @@
 - Haber revisado la Nota 03 y el Ejemplo 05.
 - Continuar en la terminal integrada del Learner Lab con el repositorio
   `https://github.com/manu-msr/M6-NOSQL` ya clonado.
-- Haber ejecutado `bash setup/setup.sh` desde la carpeta `repositorio`.
+- Haber ejecutado `bash setup/setup.sh` desde la raíz del repositorio.
 
 ## 3. Contexto del problema
 
@@ -31,7 +31,7 @@ ejecución anterior.
 Desde la terminal Bash del Learner Lab:
 
 ```bash
-cd ~/m6-nosql/repositorio
+cd ~/m6-nosql
 pwd
 bash ejemplos/semana02/ejemplo06/scripts/ejecutar.sh
 ```
