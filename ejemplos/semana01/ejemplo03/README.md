@@ -6,11 +6,11 @@
 
 ### 1. Objetivos :dart:
 
-- Leer un pipeline como una secuencia de transformaciones.
+- Construir un pipeline como una secuencia de transformaciones.
 - Filtrar siniestros por fecha y monto mediante `$match`.
 - Controlar la forma de la salida mediante `$project`.
 - Ordenar el resultado mediante `$sort`.
-- Interpretar qué documentos recibe y produce cada etapa.
+- Observar qué documentos recibe y produce cada etapa.
 
 ### 2. Requisitos :clipboard:
 
@@ -48,54 +48,120 @@ Se necesita una vista breve de los siniestros ocurridos durante 2026 cuyo monto
 reclamado sea al menos de 50 000. La salida debe mostrar identificador, póliza,
 fecha, monto y estado, y quedar ordenada de mayor a menor monto.
 
-El ejemplo se limita a recuperar y presentar documentos. No calcula indicadores
-ni agrupa resultados.
+Para comprender cómo se construye la consulta, agregaremos una etapa a la vez y
+revisaremos el resultado después de cada decisión. El ejemplo se limita a
+recuperar y presentar documentos: todavía no calcula indicadores ni agrupa
+resultados.
 
-#### Datos utilizados
+#### Preparar los datos y abrir la consola
 
-La demostración reutiliza la colección base `siniestros`. Sus diez documentos
-sintéticos fueron cargados por `setup/setup.sh`; no es necesario crear otra
-colección.
-
-#### Ejecución de la demostración
-
-Después de actualizar el repositorio, ejecuta la demostración desde la misma
-terminal:
+La demostración reutiliza la colección base `siniestros`. Desde la raíz del
+repositorio, prepara el servicio y abre la consola:
 
 ```bash
-pwd
-bash ejemplos/semana01/ejemplo03/scripts/ejecutar.sh
+bash setup/setup.sh
+bash setup/conectar.sh
 ```
 
-`pwd` debe mostrar una ruta terminada en `/m6-nosql`. El lanzador
-inicia MongoDB si fuera necesario, restablece los datos base y ejecuta
-[`consultas/filtrar_proyectar_ordenar.js`](consultas/filtrar_proyectar_ordenar.js).
+`setup.sh` restablece los diez documentos sintéticos de la colección. Cuando
+aparezca el indicador `m6_nosql>` o `>`, las instrucciones siguientes se
+escriben directamente en la consola de MongoDB.
 
-#### Desarrollo guiado
+#### Paso 1. Delimitar el universo con `$match`
 
-##### Etapa 1. `$match` reduce el conjunto
+Comienza con la condición que decide qué documentos deben continuar. El límite
+inferior de la fecha es inclusivo y el superior es exclusivo: se consideran
+fechas desde el 1 de enero de 2026 y antes del 1 de enero de 2027. En el mismo
+filtro se exige un monto mayor o igual que 50 000.
 
-El intervalo usa un límite inferior inclusivo y un límite superior exclusivo:
-desde el 1 de enero de 2026 hasta antes del 1 de enero de 2027. En el mismo
-filtro, `montoReclamado` debe ser mayor o igual que 50 000.
+```javascript
+db.siniestros.aggregate([
+  {
+    $match: {
+      fechaOcurrencia: {
+        $gte: ISODate("2026-01-01T00:00:00Z"),
+        $lt: ISODate("2027-01-01T00:00:00Z")
+      },
+      montoReclamado: { $gte: 50000 }
+    }
+  }
+]).toArray()
+```
 
-La primera salida conserva todos los campos de los seis documentos que cumplen
-ambas condiciones. `$match` decide qué documentos continúan, pero no cambia su
-estructura.
+La salida conserva todos los campos de los seis documentos que cumplen ambas
+condiciones. En este momento conviene comprobar tanto la cantidad como alguna
+fecha y algún monto: `$match` reduce el conjunto, pero no modifica la
+estructura de cada documento.
 
-##### Etapa 2. `$project` prepara una vista breve
+#### Paso 2. Dar forma a la salida con `$project`
 
-La segunda salida presenta `_id` bajo el nombre `siniestro` y conserva solamente
-`polizaId`, `fechaOcurrencia`, `montoReclamado` y `estado`. Los documentos
-almacenados no se modifican: cambia la forma que avanza por el pipeline.
+Recupera la consulta anterior con la tecla de flecha hacia arriba y agrega
+`$project` después de `$match`. Esta nueva etapa presenta `_id` con el nombre
+`siniestro` y conserva únicamente los campos necesarios para la vista.
 
-##### Etapa 3. `$sort` establece el orden
+```javascript
+db.siniestros.aggregate([
+  {
+    $match: {
+      fechaOcurrencia: {
+        $gte: ISODate("2026-01-01T00:00:00Z"),
+        $lt: ISODate("2027-01-01T00:00:00Z")
+      },
+      montoReclamado: { $gte: 50000 }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      siniestro: "$_id",
+      polizaId: 1,
+      fechaOcurrencia: 1,
+      montoReclamado: 1,
+      estado: 1
+    }
+  }
+]).toArray()
+```
 
-La tercera salida aplica las tres etapas y ordena primero por
-`montoReclamado: -1`. El campo `siniestro: 1` funciona como criterio de desempate
-ascendente para que el orden sea determinista.
+Siguen apareciendo seis documentos, pero ahora todos tienen una forma breve y
+uniforme. `$project` sólo transforma la salida del pipeline; no elimina ni
+renombra campos en los documentos almacenados.
 
-#### Resultado esperado
+#### Paso 3. Establecer un orden con `$sort`
+
+Agrega una tercera etapa. El valor `-1` ordena el monto de mayor a menor y
+`siniestro: 1` funciona como desempate ascendente, de modo que el resultado sea
+determinista incluso si dos documentos tuvieran el mismo monto.
+
+```javascript
+db.siniestros.aggregate([
+  {
+    $match: {
+      fechaOcurrencia: {
+        $gte: ISODate("2026-01-01T00:00:00Z"),
+        $lt: ISODate("2027-01-01T00:00:00Z")
+      },
+      montoReclamado: { $gte: 50000 }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      siniestro: "$_id",
+      polizaId: 1,
+      fechaOcurrencia: 1,
+      montoReclamado: 1,
+      estado: 1
+    }
+  },
+  {
+    $sort: {
+      montoReclamado: -1,
+      siniestro: 1
+    }
+  }
+]).toArray()
+```
 
 La salida final contiene seis documentos, en este orden:
 
@@ -109,6 +175,23 @@ La salida final contiene seis documentos, en este orden:
 `SIN-0007` no aparece porque ocurrió en 2025. Los demás documentos omitidos no
 alcanzan el monto mínimo.
 
+#### Recapitulación en un archivo `.js`
+
+Una vez razonadas y comprobadas las tres etapas en la consola, el archivo
+[`consultas/filtrar_proyectar_ordenar.js`](consultas/filtrar_proyectar_ordenar.js)
+reúne las consultas del ejemplo. No introduce una forma distinta de consultar:
+es un registro reproducible de lo que acabamos de construir paso a paso.
+
+Escribe `exit` para regresar a Bash y ejecútalo desde `~/m6-nosql`:
+
+```bash
+bash ejemplos/semana01/ejemplo03/scripts/ejecutar.sh
+```
+
+El lanzador restablece los datos y reproduce las tres salidas. Úsalo para
+confirmar el recorrido completo, no para sustituir la construcción razonada en
+la consola.
+
 #### Interpretación
 
 El orden de las etapas expresa el razonamiento: primero se delimita el universo,
@@ -118,9 +201,9 @@ rentabilidad ni suficiencia de reservas.
 
 #### Relación con el Reto 02
 
-El reto reutiliza la lectura secuencial de un pipeline, pero incorpora
-agrupación, arreglos y una relación entre colecciones. La actividad para
-construir y explicar una solución se encuentra exclusivamente en el reto.
+El reto reutiliza la construcción secuencial de un pipeline, pero incorpora
+agrupación, arreglos y una relación entre colecciones. Ahí también se probará
+cada decisión en la consola antes de conservar el pipeline final.
 
 #### Compatibilidad
 
