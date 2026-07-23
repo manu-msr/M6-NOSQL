@@ -8,7 +8,7 @@
 
 - Preparar el entorno individual dentro de AWS Academy Learner Lab.
 - Comprobar que MongoDB y la base `m6_nosql` estén disponibles.
-- Completar y ejecutar una consulta breve sobre la colección `siniestros`.
+- Construir y ejecutar una consulta breve sobre la colección `siniestros`.
 - Conservar evidencia de que la instancia quedó lista para trabajar.
 
 ### 2. Requisitos :clipboard:
@@ -77,11 +77,42 @@ db.siniestros.countDocuments({})
 
 Comprueba que la base sea `m6_nosql`, que el resultado de `ping` incluya
 `ok: 1`, que aparezca la colección `siniestros` y que ésta contenga diez
-documentos. Escribe `exit` para regresar a Bash.
+documentos. Mantén abierta la consola para resolver la consulta.
 
-#### Parte C. Completar una consulta corta
+#### Parte C. Construir la consulta en la consola
 
-Crea una copia editable de la plantilla:
+Trabaja directamente en el indicador `m6_nosql>` o `>`. El objetivo es
+construir una consulta que:
+
+1. recupere únicamente siniestros con estado `en_revision`;
+2. muestre `_id`, `polizaId` y `montoReclamado`;
+3. ordene el monto de mayor a menor y utilice `_id` como desempate ascendente;
+4. limite la salida a los dos primeros documentos.
+
+No intentes escribir todo de una sola vez. Comienza sólo con `find()` y el
+filtro de estado, ejecuta la consulta y comprueba qué documentos continúan.
+Después recupera la instrucción con la tecla de flecha hacia arriba y añade una
+decisión a la vez:
+
+1. la proyección de los tres campos solicitados;
+2. el orden descendente por monto y el desempate ascendente;
+3. el límite de dos documentos;
+4. `.toArray()` para observar el resultado como una lista completa.
+
+Ejecuta la consulta después de cada cambio. La cantidad y la forma de los
+documentos intermedios permiten localizar un error antes de seguir. La consulta
+final debe devolver exactamente dos documentos y no mostrar campos distintos a
+los solicitados.
+
+Registra temporalmente los dos identificadores y observa el orden en el que
+aparecen. Cuando la consulta esté comprobada, recupérala con la tecla de flecha
+hacia arriba, selecciónala y utiliza la opción **Copiar** del menú contextual
+de la terminal. Después escribe `exit` para regresar a Bash.
+
+#### Parte D. Conservar la consulta comprobada
+
+El razonamiento y las pruebas ya se realizaron en la consola. Ahora crea los
+archivos de evidencia:
 
 ```bash
 cp retos/semana01/reto01/plantilla_consultas.js \
@@ -91,18 +122,16 @@ cp retos/semana01/reto01/plantilla_respuestas.md \
 nano retos/semana01/reto01/consultas_reto01.js
 ```
 
-Completa una consulta que:
-
-1. recupere únicamente siniestros con estado `en_revision`;
-2. muestre `_id`, `polizaId` y `montoReclamado`;
-3. ordene el monto de mayor a menor y utilice `_id` como desempate ascendente;
-4. limite la salida a los dos primeros documentos.
+En la plantilla, reemplaza `null` por la consulta final que ya comprobaste,
+incluido `.toArray()`. No necesitas diseñar un programa nuevo: el archivo
+`.js` es únicamente una forma de conservar y volver a ejecutar la consulta.
+Pega la instrucción que copiaste antes de cerrar la consola.
 
 En `nano`, guarda con `Ctrl+O`, confirma con `Enter` y cierra con `Ctrl+X`.
+Si aparece `nano: command not found`, conserva el mensaje y comunícalo al
+docente antes de utilizar otro editor.
 
-#### Parte D. Ejecutar y revisar
-
-Ejecuta tu archivo desde la raíz del repositorio:
+Ejecuta el archivo desde la raíz del repositorio:
 
 ```bash
 ./.tools/bin/mongosh \
@@ -111,22 +140,23 @@ Ejecuta tu archivo desde la raíz del repositorio:
   retos/semana01/reto01/consultas_reto01.js
 ```
 
-La salida debe contener dos documentos y no debe mostrar errores. Registra los
-identificadores obtenidos y explica en una oración por qué aparecen en ese
-orden. Abre el archivo de respuestas con:
+La salida debe coincidir con la obtenida en la consola. Si no coincide, regresa
+a la consulta que sí funcionó y revisa que la hayas copiado completa.
+
+Abre el archivo de respuestas:
 
 ```bash
 nano retos/semana01/reto01/respuestas_reto01.md
 ```
 
-Completa los espacios de la
-[`plantilla_respuestas.md`](plantilla_respuestas.md), guarda y cierra el editor.
+Registra los dos identificadores y explica en una oración por qué aparecen en
+ese orden. Guarda y cierra el editor.
 
 #### Producto breve esperado
 
 Entrega únicamente:
 
-- `consultas_reto01.js` con la consulta ejecutable;
+- `consultas_reto01.js` con la consulta que comprobaste en la consola;
 - `respuestas_reto01.md` con los dos identificadores y una interpretación;
 - una captura donde se observe la ejecución correcta de la consulta.
 
@@ -135,8 +165,9 @@ No incluyas contraseñas, llaves, certificados ni datos de tu cuenta.
 #### Criterios de revisión
 
 - La instancia quedó configurada y la base responde.
+- La consulta se construyó y verificó progresivamente en la consola.
 - El filtro, la proyección, el orden y el límite cumplen la consigna.
-- La consulta se ejecuta sin errores y devuelve dos documentos.
+- El archivo conserva la consulta ejecutable y devuelve dos documentos.
 - La interpretación explica brevemente el orden observado.
 
 <br/>
