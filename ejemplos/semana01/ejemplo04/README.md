@@ -10,7 +10,7 @@
 - Convertir arreglos en documentos individuales mediante `$unwind`.
 - Resumir frecuencia y monto mediante `$group`.
 - Presentar claves de agrupación con `$addFields` y `$project`.
-- Reconocer el cambio de unidad de observación a lo largo de un pipeline.
+- Observar el cambio de unidad de análisis a lo largo de un pipeline.
 
 ### 2. Requisitos :clipboard:
 
@@ -28,57 +28,215 @@ reclamado acompaña esas apariciones, separado por producto. `siniestros`
 conserva `polizaId` y un arreglo `coberturasAfectadas`; el producto se encuentra
 en `polizas_referencias`.
 
-#### Datos utilizados
+Construiremos el pipeline directamente en la consola. Después de cada etapa
+observaremos cómo cambian los documentos antes de incorporar la siguiente. Así
+podremos reconocer que un pipeline no es una instrucción indivisible, sino una
+secuencia de decisiones sobre los datos.
 
-La demostración usa las colecciones base `siniestros` y
-`polizas_referencias`. Los datos son sintéticos y se restablecen antes de cada
-ejecución.
+#### Abrir la consola
 
-#### Ejecución de la demostración
-
-Desde la terminal Bash del Learner Lab, el ejemplo se ejecuta con estas líneas:
+La demostración utiliza las colecciones base `siniestros` y
+`polizas_referencias`, preparadas al iniciar la sesión. Desde `~/m6-nosql`
+ejecuta:
 
 ```bash
-cd ~/m6-nosql
-pwd
-bash ejemplos/semana01/ejemplo04/scripts/ejecutar.sh
+bash setup/conectar.sh
 ```
 
-`pwd` debe terminar en `/m6-nosql`. El lanzador ejecuta
-[`consultas/resumir_por_producto_cobertura.js`](consultas/resumir_por_producto_cobertura.js)
-después de comprobar MongoDB y restablecer los datos.
+Cuando aparezca el indicador `m6_nosql>` o `>`, escribe las consultas
+siguientes una por una.
 
-#### Desarrollo guiado
+#### Paso 1. Observar la relación creada por `$lookup`
 
-##### Etapa 1. `$lookup` incorpora la póliza relacionada
+Antes de procesar todos los documentos, observa una sola póliza relacionada.
+El `$match` inicial limita temporalmente la demostración a `SIN-0001`; después,
+`$lookup` compara `polizaId` con `_id` y coloca las coincidencias en `poliza`.
 
-`polizaId` en `siniestros` se compara con `_id` en `polizas_referencias`. La
-coincidencia se agrega como el arreglo `poliza`. En estos datos cada siniestro
-tiene una sola póliza coincidente, pero `$lookup` siempre produce un arreglo.
+```javascript
+db.siniestros.aggregate([
+  {
+    $match: {
+      _id: "SIN-0001"
+    }
+  },
+  {
+    $lookup: {
+      from: "polizas_referencias",
+      localField: "polizaId",
+      foreignField: "_id",
+      as: "poliza"
+    }
+  }
+]).toArray()
+```
 
-##### Etapa 2. El primer `$unwind` individualiza la póliza
+El documento conserva sus campos originales y ahora contiene `poliza` como un
+arreglo con una coincidencia. Aunque los datos de este ejemplo relacionan cada
+siniestro con una sola póliza, `$lookup` siempre produce un arreglo porque una
+relación podría encontrar cero, una o varias coincidencias.
 
-`$unwind: "$poliza"` convierte el arreglo de una coincidencia en un documento
-anidado. El campo `poliza.producto` queda disponible para agrupar.
+#### Paso 2. Individualizar la póliza con `$unwind`
 
-##### Etapa 3. El segundo `$unwind` cambia la unidad
+Recupera la consulta anterior con la tecla de flecha hacia arriba y agrega un
+`$unwind`. Esta etapa reemplaza el arreglo de una coincidencia por el documento
+de la póliza relacionada.
 
-`$unwind: "$coberturasAfectadas"` produce una fila conceptual por aparición de
-cobertura. Los diez siniestros se convierten en once documentos intermedios
-porque `SIN-0006` contiene dos coberturas afectadas.
+```javascript
+db.siniestros.aggregate([
+  {
+    $match: {
+      _id: "SIN-0001"
+    }
+  },
+  {
+    $lookup: {
+      from: "polizas_referencias",
+      localField: "polizaId",
+      foreignField: "_id",
+      as: "poliza"
+    }
+  },
+  {
+    $unwind: "$poliza"
+  }
+]).toArray()
+```
 
-##### Etapa 4. `$group` produce los resúmenes
+Ahora `poliza.producto` puede leerse como un campo anidado. El documento sigue
+representando un siniestro porque sólo había una póliza coincidente.
 
-La clave compuesta contiene producto y cobertura. `$sum: 1` cuenta apariciones;
-`$sum` y `$avg` sobre `montoReclamado` resumen el monto asociado con cada
-aparición.
+#### Paso 3. Observar el cambio de unidad
 
-##### Etapas 5 a 7. Preparar y ordenar la salida
+Quitaremos el `$match` utilizado para la inspección y procesaremos los diez
+siniestros. Un segundo `$unwind` produce un documento intermedio por cada
+elemento de `coberturasAfectadas`; `$count` permite observar cuántas unidades
+llegan a la siguiente parte del pipeline.
 
-`$addFields` presenta como campos las dos partes de la clave compuesta;
-`$project` elimina `_id`; y `$sort` ordena por frecuencia y monto.
+```javascript
+db.siniestros.aggregate([
+  {
+    $lookup: {
+      from: "polizas_referencias",
+      localField: "polizaId",
+      foreignField: "_id",
+      as: "poliza"
+    }
+  },
+  {
+    $unwind: "$poliza"
+  },
+  {
+    $unwind: "$coberturasAfectadas"
+  },
+  {
+    $count: "documentosIntermedios"
+  }
+]).toArray()
+```
 
-#### Resultado esperado
+El resultado es `11`. La colección contiene diez siniestros, pero `SIN-0006`
+incluye dos coberturas afectadas y, después del segundo `$unwind`, participa
+como dos apariciones. La unidad ya no es sólo “un siniestro”, sino “una
+aparición de cobertura dentro de un siniestro”.
+
+#### Paso 4. Formar los grupos
+
+Sustituye `$count` por `$group`. La clave `_id` combina producto y cobertura;
+los acumuladores cuentan apariciones y resumen el monto que acompaña a cada una.
+
+```javascript
+db.siniestros.aggregate([
+  {
+    $lookup: {
+      from: "polizas_referencias",
+      localField: "polizaId",
+      foreignField: "_id",
+      as: "poliza"
+    }
+  },
+  {
+    $unwind: "$poliza"
+  },
+  {
+    $unwind: "$coberturasAfectadas"
+  },
+  {
+    $group: {
+      _id: {
+        producto: "$poliza.producto",
+        cobertura: "$coberturasAfectadas"
+      },
+      apariciones: { $sum: 1 },
+      montoReclamadoAsociado: { $sum: "$montoReclamado" },
+      montoPromedioPorAparicion: { $avg: "$montoReclamado" }
+    }
+  }
+]).toArray()
+```
+
+En esta salida `_id` ya no identifica un siniestro: representa la clave de cada
+grupo. Antes de dar formato al resultado, comprueba que se hayan formado cinco
+combinaciones distintas de producto y cobertura.
+
+#### Paso 5. Preparar y ordenar la salida
+
+Agrega las últimas etapas. `$addFields` presenta las dos partes de la clave
+compuesta como campos; `$project` elimina `_id`; y `$sort` ordena primero por
+apariciones y después por monto.
+
+```javascript
+db.siniestros.aggregate([
+  {
+    $lookup: {
+      from: "polizas_referencias",
+      localField: "polizaId",
+      foreignField: "_id",
+      as: "poliza"
+    }
+  },
+  {
+    $unwind: "$poliza"
+  },
+  {
+    $unwind: "$coberturasAfectadas"
+  },
+  {
+    $group: {
+      _id: {
+        producto: "$poliza.producto",
+        cobertura: "$coberturasAfectadas"
+      },
+      apariciones: { $sum: 1 },
+      montoReclamadoAsociado: { $sum: "$montoReclamado" },
+      montoPromedioPorAparicion: { $avg: "$montoReclamado" }
+    }
+  },
+  {
+    $addFields: {
+      producto: "$_id.producto",
+      cobertura: "$_id.cobertura"
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      producto: 1,
+      cobertura: 1,
+      apariciones: 1,
+      montoReclamadoAsociado: 1,
+      montoPromedioPorAparicion: 1
+    }
+  },
+  {
+    $sort: {
+      apariciones: -1,
+      montoReclamadoAsociado: -1,
+      producto: 1,
+      cobertura: 1
+    }
+  }
+]).toArray()
+```
 
 La salida contiene cinco grupos:
 
@@ -92,6 +250,22 @@ La salida contiene cinco grupos:
 
 El orden entre los grupos con una aparición se decide por el monto descendente.
 
+#### Recapitulación en un archivo `.js`
+
+Después de construir y comprobar el pipeline en la consola, el archivo
+[`consultas/resumir_por_producto_cobertura.js`](consultas/resumir_por_producto_cobertura.js)
+conserva el recorrido completo. El archivo no es una consulta diferente ni un
+tema adicional: sólo permite reproducir lo que ya razonamos.
+
+Escribe `exit` para regresar a Bash y ejecútalo desde `~/m6-nosql`:
+
+```bash
+bash ejemplos/semana01/ejemplo04/scripts/ejecutar.sh
+```
+
+El lanzador restablece los datos y presenta tanto el cambio de unidad como el
+resumen final.
+
 #### Interpretación
 
 La frecuencia cuenta apariciones en `coberturasAfectadas`, no pólizas ni
@@ -103,8 +277,8 @@ cobertura y el pipeline no la inventa.
 #### Relación con el Reto 02
 
 El reto plantea otra ventana temporal y otro conjunto de datos. Ahí se
-construye un pipeline y se documenta la interpretación; esta carpeta conserva
-únicamente la demostración guiada.
+construirá y comprobará cada etapa directamente en la consola; sólo al final se
+conservará el pipeline verificado como archivo de evidencia.
 
 #### Compatibilidad
 
