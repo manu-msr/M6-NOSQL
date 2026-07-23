@@ -14,8 +14,8 @@
 
 - Haber revisado la Nota 02 y las demostraciones de los ejemplos 03 y 04.
 - Continuar en la terminal integrada del Learner Lab.
-- Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
-  `bash setup/setup.sh` desde la raíz del repositorio.
+- Haber actualizado el repositorio al comenzar el Ejemplo 03.
+- Conservar las herramientas preparadas durante la Sesión 1.
 
 ### 3. Desarrollo :rocket:
 
@@ -179,11 +179,6 @@ externas o certificados.
   `$unwind`, seguido por un resumen con `$group`.
 - El reto integra esas decisiones con datos distintos y concentra la práctica
   de la sesión.
-
-#### Nota docente
-
-La carpeta `solucion_docente` se mantiene fuera de la versión del repositorio
-que se distribuya al estudiantado.
 
 <br/>
 

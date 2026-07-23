@@ -16,10 +16,31 @@
 
 - Haber revisado la Nota 02.
 - Continuar en la terminal integrada del Learner Lab.
-- Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
-  `bash setup/setup.sh` desde la raíz del repositorio.
+- Conservar el repositorio y las herramientas preparados durante la Sesión 1.
 
 ### 3. Desarrollo :rocket:
+
+#### Actualizar el repositorio
+
+Antes de comenzar el primer ejemplo de la sesión, actualiza la copia utilizada
+en la clase anterior. Desde la terminal integrada del Learner Lab, ejecuta una
+línea a la vez:
+
+```bash
+cd ~/m6-nosql
+git pull --ff-only
+pwd
+ls
+```
+
+`git pull --ff-only` incorpora los cambios que el docente haya publicado antes
+de la clase sin crear una nueva copia del repositorio. La actualización fue
+correcta si aparece `Already up-to-date.` o un resumen de avance sin errores.
+Además, `pwd` debe terminar en `/m6-nosql` y `ls` debe mostrar `datos`,
+`ejemplos`, `retos` y `setup`.
+
+Si `cd` indica que la carpeta no existe o `git pull --ff-only` muestra un error,
+conserva el mensaje y comunícalo al docente. No crees otra copia por tu cuenta.
 
 #### Contexto del problema
 
@@ -38,11 +59,10 @@ colección.
 
 #### Ejecución de la demostración
 
-Desde la terminal Bash del Learner Lab, las siguientes líneas sitúan la sesión
-en la carpeta correcta y ejecutan el ejemplo:
+Después de actualizar el repositorio, ejecuta la demostración desde la misma
+terminal:
 
 ```bash
-cd ~/m6-nosql
 pwd
 bash ejemplos/semana01/ejemplo03/scripts/ejecutar.sh
 ```

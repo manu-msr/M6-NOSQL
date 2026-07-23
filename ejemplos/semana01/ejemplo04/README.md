@@ -15,9 +15,9 @@
 ### 2. Requisitos :clipboard:
 
 - Haber revisado la Nota 02 y el Ejemplo 03.
-- Continuar en la terminal integrada del Learner Lab con el repositorio
-  `https://github.com/manu-msr/M6-NOSQL` ya clonado.
-- Haber ejecutado `bash setup/setup.sh` desde la raíz del repositorio.
+- Continuar en la terminal integrada del Learner Lab.
+- Haber actualizado el repositorio al comenzar el Ejemplo 03.
+- Conservar las herramientas preparadas durante la Sesión 1.
 
 ### 3. Desarrollo :rocket:
 

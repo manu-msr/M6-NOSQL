@@ -51,6 +51,11 @@ demostración ejecutada por el docente.
 
 ## 3. Sesión 2: Framework de agregación :gear:
 
+Al comenzar el Ejemplo 03 actualizarás la copia utilizada en la sesión anterior
+mediante `git pull --ff-only`. Ésta será la práctica habitual al inicio de cada
+sesión: recuperar primero cualquier cambio publicado y trabajar después con los
+ejemplos y el reto correspondientes.
+
 ---
 
 ### <ins>Pipeline como secuencia de transformaciones</ins>
