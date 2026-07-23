@@ -7,10 +7,10 @@
 ### 1. Objetivos :dart:
 
 - Reconocer campos simples, documentos anidados y arreglos.
-- Repasar filtros de igualdad y comparación mediante `find()`.
+- Construir filtros de igualdad y comparación mediante `find()`.
 - Distinguir el filtro de la proyección de una consulta.
-- Observar el uso de ordenamientos y límites.
-- Interpretar los resultados en términos de los datos consultados.
+- Incorporar ordenamientos y límites de manera progresiva.
+- Interpretar los resultados en términos de la pregunta planteada.
 
 ### 2. Requisitos :clipboard:
 
@@ -19,8 +19,8 @@
    Nota 01.
 3. Seguir la demostración realizada por el docente.
 
-> El docente ejecutará las consultas. Concéntrate en identificar qué pregunta
-> responde cada una y qué parte de la instrucción produce el resultado.
+> El docente escribirá las consultas en la consola. Concéntrate en identificar
+> qué pregunta responde cada parte y cómo cambia la salida al modificarla.
 
 ### 3. Desarrollo :rocket:
 
@@ -32,70 +32,192 @@ dos arreglos: `coberturasAfectadas` y `etiquetas`.
 
 El área de seguimiento necesita localizar casos específicos y mostrar sólo la
 información necesaria. En este repaso no transformaremos ni agruparemos los
-documentos; utilizaremos consultas directas.
+documentos; construiremos consultas directas.
 
-#### Ejecución de la demostración
+#### Abrir la consola
 
-Desde Bash, el docente ejecutará:
+Desde Bash, el docente escribirá:
 
 ```bash
 cd ~/m6-nosql
-bash ejemplos/semana01/ejemplo02/scripts/ejecutar.sh
+bash setup/conectar.sh
 ```
 
-El archivo
-[`consultas/consultas_siniestros.js`](consultas/consultas_siniestros.js)
-organiza cinco consultas y presenta sus resultados en el orden descrito a
-continuación.
+Cuando el indicador cambie a `m6_nosql>` o `>`, las consultas se escribirán una
+por una.
 
 #### Consulta 1. Reconocer la estructura
 
-`findOne()` recupera `SIN-0003`. La salida permite identificar valores simples,
-una fecha BSON, el documento anidado `aviso` y los arreglos del siniestro.
+La primera pregunta es: **¿cómo está representado el siniestro `SIN-0003`?**
+
+```javascript
+db.siniestros.findOne({ _id: "SIN-0003" })
+```
+
+`findOne()` recupera un documento. La salida permite identificar valores
+simples, una fecha BSON, el documento anidado `aviso` y los arreglos
+`coberturasAfectadas` y `etiquetas`.
 
 #### Consulta 2. Consultar un campo anidado
 
-La ruta `"aviso.canal"` selecciona los siniestros cuyo aviso fue recibido por
-el portal. La notación de punto permite acceder a un campo dentro de otro
-documento.
+Ahora buscamos los siniestros cuyo aviso fue recibido por el portal. Comienza
+solamente con el filtro sobre la ruta `"aviso.canal"`:
+
+```javascript
+db.siniestros.find(
+  { "aviso.canal": "portal" }
+).toArray()
+```
+
+La salida permite comprobar que cinco documentos cumplen la condición, aunque
+todavía muestra todos sus campos. Recupera la consulta con la tecla de flecha
+hacia arriba, añade la proyección y ordena los identificadores:
+
+```javascript
+db.siniestros.find(
+  { "aviso.canal": "portal" },
+  { _id: 1, polizaId: 1, "aviso.canal": 1, "aviso.diasDespues": 1 }
+).sort({ _id: 1 }).toArray()
+```
+
+El primer documento dentro de `find()` es el filtro; el segundo es la
+proyección. La salida contiene cinco documentos. `toArray()` permite observar
+el resultado completo en la consola.
 
 #### Consulta 3. Buscar un valor dentro de un arreglo
 
-La condición `{ etiquetas: "danio_agua" }` recupera los documentos cuyo arreglo
-contiene ese valor. No es necesario conocer la posición que ocupa la etiqueta.
+La siguiente pregunta es: **¿qué siniestros contienen la etiqueta
+`danio_agua`?**
 
-#### Consulta 4. Combinar condiciones y proyectar
+```javascript
+db.siniestros.find(
+  { etiquetas: "danio_agua" },
+  { _id: 1, polizaId: 1, etiquetas: 1 }
+).sort({ _id: 1 }).toArray()
+```
 
-El filtro conserva siniestros `en_revision`, con monto mayor que 50 000 y aviso
-por portal. La proyección limita la respuesta al identificador, la póliza, la
-fecha y el monto reclamado.
+No es necesario indicar la posición del valor dentro del arreglo. La consulta
+recupera `SIN-0001` y `SIN-0009`.
 
-#### Consulta 5. Ordenar y limitar
+#### Consulta 4. Combinar condiciones
 
-La última consulta ordena los siniestros en revisión por monto descendente y
-devuelve los tres primeros. Un segundo criterio por identificador hace que el
-orden sea estable cuando existen valores iguales.
+Ahora se requieren siniestros que cumplan simultáneamente tres condiciones:
+estar `en_revision`, tener un monto mayor que 50 000 y haber sido avisados por
+portal. Construye el filtro incorporando y comprobando una condición a la vez:
 
-#### Resultados esperados
+```javascript
+db.siniestros.find(
+  { estado: "en_revision" }
+).toArray()
+```
 
-- Cinco documentos tienen aviso por portal.
-- `SIN-0001` y `SIN-0009` contienen la etiqueta `danio_agua`.
-- `SIN-0003` y `SIN-0009` cumplen las tres condiciones de la Consulta 4.
-- Los tres primeros montos en revisión corresponden, en orden, a `SIN-0003`,
-  `SIN-0007` y `SIN-0009`.
+```javascript
+db.siniestros.find(
+  {
+    estado: "en_revision",
+    montoReclamado: { $gt: 50000 }
+  }
+).toArray()
+```
+
+```javascript
+db.siniestros.find(
+  {
+    estado: "en_revision",
+    montoReclamado: { $gt: 50000 },
+    "aviso.canal": "portal"
+  }
+).toArray()
+```
+
+Las condiciones sobre campos distintos se interpretan conjuntamente. Después
+de comprobar que sólo continúan dos documentos, agrega la proyección de los
+campos útiles y el orden descendente por monto:
+
+```javascript
+db.siniestros.find(
+  {
+    estado: "en_revision",
+    montoReclamado: { $gt: 50000 },
+    "aviso.canal": "portal"
+  },
+  {
+    _id: 1,
+    polizaId: 1,
+    fechaOcurrencia: 1,
+    montoReclamado: 1
+  }
+).sort({ montoReclamado: -1 }).toArray()
+```
+
+El resultado contiene `SIN-0003` y `SIN-0009`, ordenados por monto descendente.
+
+#### Consulta 5. Incorporar orden y límite
+
+Partimos de una pregunta más sencilla: **¿cuáles son los tres siniestros en
+revisión con mayor monto reclamado?** Primero recupera los documentos en
+revisión y presenta sólo los campos necesarios:
+
+```javascript
+db.siniestros.find(
+  { estado: "en_revision" },
+  { _id: 1, polizaId: 1, montoReclamado: 1 }
+).toArray()
+```
+
+Recupera la instrucción y agrega el orden. El criterio `_id: 1` resuelve los
+empates de manera determinista:
+
+```javascript
+db.siniestros.find(
+  { estado: "en_revision" },
+  { _id: 1, polizaId: 1, montoReclamado: 1 }
+).sort({ montoReclamado: -1, _id: 1 }).toArray()
+```
+
+Finalmente incorpora `limit(3)`:
+
+```javascript
+db.siniestros.find(
+  { estado: "en_revision" },
+  { _id: 1, polizaId: 1, montoReclamado: 1 }
+).sort({ montoReclamado: -1, _id: 1 }).limit(3).toArray()
+```
+
+Los resultados son `SIN-0003`, `SIN-0007` y `SIN-0009`. La proyección no cambió
+qué documentos cumplían el filtro; el orden cambió su secuencia y el límite
+redujo la cantidad visible.
+
+Para regresar a Bash se escribe:
+
+```javascript
+exit
+```
 
 #### Interpretación
 
 El filtro decide qué documentos cumplen la pregunta y la proyección decide qué
-campos aparecen en la respuesta. `sort()` organiza el resultado y `limit()`
-restringe su tamaño. Una consulta correcta debe relacionar estas operaciones
-con la pregunta que se desea responder, no sólo producir una salida sin error.
+campos aparecen. `sort()` establece la secuencia y `limit()` restringe el
+tamaño de la respuesta. La consulta se construyó incorporando una decisión a la
+vez y comprobando su efecto.
 
 #### Relación con el Reto 01
 
-Después de preparar tu instancia, completarás una versión breve de la última
-consulta. Con ello comprobarás al mismo tiempo la configuración del entorno y
-el uso básico de filtro, proyección, ordenamiento y límite.
+Después de preparar tu instancia, construirás en la consola una versión breve
+de la última consulta y justificarás el orden de sus resultados.
+
+#### Recapitulación en un archivo `.js`
+
+Una vez razonadas las cinco consultas, el archivo
+[`consultas_siniestros.js`](consultas/consultas_siniestros.js) las conserva en
+el mismo orden. El archivo sirve para repetir la demostración; no sustituye la
+construcción paso a paso.
+
+Desde Bash se ejecuta con:
+
+```bash
+bash ejemplos/semana01/ejemplo02/scripts/ejecutar.sh
+```
 
 <br/>
 
