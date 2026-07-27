@@ -17,7 +17,7 @@ de un proyecto de aplicación.
 ⚙️ Antes de comenzar, consulta el [manual de configuración](docs/inicio_learner_lab.md).
 
 - 📄 **[Semana 01: Documentos, consultas y agregaciones](ejemplos/semana01/README.md)**
-- ⚡ **Semana 02:** Rendimiento y calidad de los datos
+- ⚡ **[Semana 02: Rendimiento y calidad de los datos](ejemplos/semana02/README.md)**
 - 🗺️ **Semana 03:** Consultas geoespaciales
 - ⏱️ **Semana 04:** Series de tiempo
 - 🔎 **Semana 05:** Búsqueda y protección de la información

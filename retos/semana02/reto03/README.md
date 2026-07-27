@@ -1,18 +1,24 @@
-# Reto 03: proponer una estrategia de indexación para un portafolio
+[`Conceptos avanzados de bases de datos NoSQL`](../../../README.md) > [`Semana 02`](../../../ejemplos/semana02/README.md) > `Reto 03`
 
-## 1. Objetivo
+## Reto 03: Proponer una estrategia de indexación para un portafolio
+
+<div style="text-align: justify;">
+
+### 1. Objetivos :dart:
 
 Interpretar los planes de tres consultas, proponer una estrategia de indexación
 que atienda sus patrones y comprobarla mediante métricas antes y después.
 
-## 2. Requisitos
+### 2. Requisitos :clipboard:
 
 - Haber revisado la Nota 03 y las demostraciones de los ejemplos 05 y 06.
 - Continuar en la terminal integrada del Learner Lab.
 - Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
   `bash setup/setup.sh` desde la raíz del repositorio.
 
-## 3. Situación
+### 3. Desarrollo :rocket:
+
+#### Situación
 
 `polizas_indexacion_reto` contiene 240 pólizas sintéticas. Se utilizan tres
 consultas recurrentes:
@@ -27,7 +33,7 @@ La estrategia debe usar como máximo dos índices secundarios. Por ello, no se
 espera un índice aislado para cada consulta: se debe valorar si un prefijo puede
 atender dos patrones y reconocer cuándo se necesita un índice multikey.
 
-## 4. Carga y comprobación de los datos
+#### Cargar y comprobar los datos
 
 Desde la terminal Bash del Learner Lab:
 
@@ -55,7 +61,7 @@ db.polizas_indexacion_reto.getIndexes()
 
 Las respuestas deben mostrar `240` y el índice `_id_`. `exit` cierra la consola.
 
-## 5. Analizar los planes iniciales
+#### Analizar los planes iniciales
 
 Desde la raíz del repositorio:
 
@@ -70,7 +76,7 @@ El archivo no se edita. Imprime un resumen con las etapas,
 `nReturned`, `totalKeysExamined` y `totalDocsExamined` para las tres consultas.
 Esos valores constituyen la medición anterior a la propuesta.
 
-## 6. Preparar los archivos de trabajo
+#### Preparar los archivos de trabajo
 
 Las siguientes líneas crean copias editables:
 
@@ -92,7 +98,7 @@ mismo procedimiento se usa con `respuestas_reto03.md`. Si aparece
 `nano: command not found`, se conserva el mensaje y se comunica al docente antes
 de utilizar otro editor.
 
-## 7. Consigna de indexación
+#### Construir la estrategia de indexación
 
 En `estrategia_reto03.js` se completan los dos patrones de
 `indicesPropuestos`. La solución debe:
@@ -108,7 +114,7 @@ En `estrategia_reto03.js` se completan los dos patrones de
 Los nombres de los índices ya están definidos en la plantilla. Sólo se completan
 los patrones de claves; no se modifican las consultas ni el código de medición.
 
-## 8. Ejecutar y comprobar la estrategia
+#### Ejecutar y comprobar la estrategia
 
 Desde la raíz del repositorio:
 
@@ -130,7 +136,7 @@ bash setup/setup.sh
 bash retos/semana02/reto03/scripts/cargar_datos.sh
 ```
 
-## 9. Interpretación requerida
+#### Interpretar la comparación
 
 En `respuestas_reto03.md` se documenta:
 
@@ -143,7 +149,7 @@ En `respuestas_reto03.md` se documenta:
 6. por qué la propuesta no demuestra que esos índices mejoren cualquier
    consulta ni que carezcan de costo.
 
-## 10. Producto breve esperado
+#### Producto breve esperado
 
 La entrega contiene solamente:
 
@@ -154,7 +160,7 @@ La entrega contiene solamente:
 
 No se requiere un reporte extenso ni una captura completa de todos los datos.
 
-## 11. Criterios de revisión
+#### Criterios de revisión
 
 - Los índices corresponden con filtros, ordenamiento y arreglo.
 - La Consulta A no necesita una etapa `SORT` independiente.
@@ -163,19 +169,20 @@ No se requiere un reporte extenso ni una captura completa de todos los datos.
 - Los resultados no cambian y la comparación usa métricas del plan.
 - La interpretación reconoce costos y límites de la evidencia.
 
-## 12. Relación con los ejemplos
+#### Relación con los ejemplos
 
 - El Ejemplo 05 muestra una comparación controlada antes y después.
 - El Ejemplo 06 muestra el orden de un índice compuesto y el uso de un prefijo.
 - El reto integra esas decisiones e incorpora un patrón sobre un arreglo.
 
-## Compatibilidad
+#### Compatibilidad
 
 La evidencia se obtiene en MongoDB Community 4.4 o 7.0, según la imagen
 detectada. No se debe atribuir el mismo plan ni las mismas métricas a Amazon
 DocumentDB sin ejecutar una comprobación independiente en ese motor.
 
-## Nota docente
+<br/>
 
-La carpeta `solucion_docente` se mantiene fuera de la versión del repositorio
-que se distribuya al estudiantado.
+[`Ejemplo 06`](../../../ejemplos/semana02/ejemplo06/README.md) | [`Siguiente`](../reto04/README.md)
+
+</div>

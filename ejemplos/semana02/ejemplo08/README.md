@@ -1,93 +1,247 @@
-# Ejemplo 08: validar arreglos y documentos anidados
+[`Conceptos avanzados de bases de datos NoSQL`](../../../README.md) > [`Semana 02`](../README.md) > `Ejemplo 08`
 
-## 1. Objetivos
+## Ejemplo 08: Validar arreglos y documentos anidados
+
+<div style="text-align: justify;">
+
+### 1. Objetivos :dart:
 
 - Aplicar un subesquema a cada elemento de un arreglo.
 - Exigir al menos una cobertura mediante `minItems`.
 - Validar un documento anidado cuando un campo opcional está presente.
-- Distinguir la ausencia válida de un campo opcional de una estructura presente
-  pero inválida.
+- Distinguir ausencia válida de estructura presente pero inválida.
 
-## 2. Requisitos
+### 2. Requisitos :clipboard:
 
 - Haber revisado la Nota 04 y el Ejemplo 07.
-- Continuar en la terminal integrada del Learner Lab con el repositorio
-  `https://github.com/manu-msr/M6-NOSQL` ya clonado.
-- Haber ejecutado `bash setup/setup.sh` desde la raíz del repositorio.
+- Continuar en la terminal integrada del Learner Lab.
+- Conservar la copia del repositorio actualizada al inicio de la sesión.
 
-## 3. Contexto del problema
+### 3. Desarrollo :rocket:
+
+#### Contexto del problema
 
 Una póliza debe contener al menos una cobertura. Cada elemento necesita una
 clave y un límite no negativo. Algunas pólizas incluyen además una persona
-beneficiaria; ese campo puede omitirse, pero si aparece debe contener
-`personaId` y `parentesco` como cadenas.
+beneficiaria: el campo puede omitirse, pero si aparece debe contener
+`personaId` y `parentesco`.
 
-## 4. Datos utilizados
+Ampliaremos progresivamente el esquema del ejemplo anterior. Primero
+controlaremos el arreglo como conjunto, después cada elemento y, finalmente, la
+estructura opcional.
 
-El script crea nuevamente la colección independiente
-`polizas_validadas_ejemplo`. Las cinco escrituras de prueba son sintéticas y no
-modifican la colección base `polizas`.
+#### Preparar la consola
 
-## 5. Ejecución de la demostración
-
-Desde la terminal Bash del Learner Lab:
+Desde la raíz `~/m6-nosql`, comprueba el servicio y abre la consola:
 
 ```bash
-cd ~/m6-nosql
-pwd
+bash setup/setup.sh
+bash setup/conectar.sh
+```
+
+Cuando aparezca `m6_nosql>` o `>`, escribe una instrucción a la vez.
+
+#### Paso 1. Validar el arreglo como conjunto
+
+Trabaja con una colección independiente y comienza el esquema:
+
+```javascript
+var nombreColeccion = "polizas_validadas_ejemplo"
+db[nombreColeccion].drop()
+
+var esquema = {
+  bsonType: "object",
+  required: ["_id", "producto", "coberturas"],
+  properties: {
+    _id: {
+      bsonType: "string"
+    },
+    producto: {
+      bsonType: "string"
+    },
+    coberturas: {
+      bsonType: "array",
+      minItems: 1
+    }
+  }
+}
+```
+
+`bsonType: "array"` controla el tipo del campo y `minItems: 1` evita una lista
+vacía. Estas reglas todavía no describen la forma de cada cobertura.
+
+#### Paso 2. Validar cada cobertura
+
+Agrega un subesquema mediante `items`:
+
+```javascript
+esquema.properties.coberturas.items = {
+  bsonType: "object",
+  required: ["clave", "limite"],
+  properties: {
+    clave: {
+      bsonType: "string"
+    },
+    limite: {
+      bsonType: ["int", "long", "double", "decimal"],
+      minimum: 0
+    }
+  }
+}
+```
+
+Todos los elementos del arreglo deben satisfacer este mismo subesquema. Una
+cobertura con `clave` pero sin `limite` no es válida.
+
+#### Paso 3. Conservar una variación legítima
+
+Agrega el esquema de `beneficiario` sin incluir ese campo en el `required` de la
+póliza:
+
+```javascript
+esquema.properties.beneficiario = {
+  bsonType: "object",
+  required: ["personaId", "parentesco"],
+  properties: {
+    personaId: {
+      bsonType: "string"
+    },
+    parentesco: {
+      bsonType: "string"
+    }
+  }
+}
+```
+
+La ausencia de `beneficiario` es válida. Si el campo aparece, entonces su valor
+debe ser un objeto completo de acuerdo con el subesquema.
+
+#### Paso 4. Aplicar el esquema
+
+Crea la colección y comprueba la configuración:
+
+```javascript
+db.createCollection(nombreColeccion, {
+  validator: {
+    $jsonSchema: esquema
+  },
+  validationLevel: "strict",
+  validationAction: "error"
+})
+
+db.getCollectionInfos({
+  name: nombreColeccion
+})[0].options
+```
+
+#### Paso 5. Contrastar casos representativos
+
+Primero inserta una póliza sin el campo opcional y otra con un beneficiario
+completo:
+
+```javascript
+db[nombreColeccion].insertOne({
+  _id: "VAL-POL-01",
+  producto: "auto",
+  coberturas: [
+    { clave: "DM", limite: 450000 },
+    { clave: "RC", limite: 3000000 }
+  ]
+})
+```
+
+```javascript
+db[nombreColeccion].insertOne({
+  _id: "VAL-POL-02",
+  producto: "vida",
+  coberturas: [
+    { clave: "FAL", limite: 1200000 }
+  ],
+  beneficiario: {
+    personaId: "PER-SINT-021",
+    parentesco: "conyuge"
+  }
+})
+```
+
+Ambas escrituras deben aceptarse. Contrasta ahora tres incumplimientos:
+
+```javascript
+db[nombreColeccion].insertOne({
+  _id: "VAL-POL-03",
+  producto: "hogar",
+  coberturas: []
+})
+```
+
+```javascript
+db[nombreColeccion].insertOne({
+  _id: "VAL-POL-04",
+  producto: "auto",
+  coberturas: [
+    { clave: "DM" }
+  ]
+})
+```
+
+```javascript
+db[nombreColeccion].insertOne({
+  _id: "VAL-POL-05",
+  producto: "vida",
+  coberturas: [
+    { clave: "FAL", limite: 900000 }
+  ],
+  beneficiario: {
+    personaId: "PER-SINT-022"
+  }
+})
+```
+
+El arreglo vacío, la cobertura sin límite y el beneficiario incompleto deben
+ser rechazados. Comprueba el resultado:
+
+```javascript
+db[nombreColeccion].countDocuments({})
+db[nombreColeccion].find({}).sort({ _id: 1 }).toArray()
+```
+
+La colección termina con `VAL-POL-01` y `VAL-POL-02`.
+
+#### Recapitulación en un archivo `.js`
+
+El archivo
+[`consultas/validar_arreglos_anidados.js`](consultas/validar_arreglos_anidados.js)
+reúne el esquema completo y ejecuta las cinco pruebas con mensajes breves.
+Revísalo después de construir cada parte en la consola.
+
+Escribe `exit` y, desde `~/m6-nosql`, ejecuta:
+
+```bash
 bash ejemplos/semana02/ejemplo08/scripts/ejecutar.sh
 ```
 
-El lanzador ejecuta
-[`consultas/validar_arreglos_anidados.js`](consultas/validar_arreglos_anidados.js).
-
-## 6. Desarrollo guiado
-
-### Paso 1. Validar el arreglo como conjunto
-
-`coberturas` debe ser un arreglo y `minItems: 1` evita listas vacías. Esta regla
-no describe todavía la forma de cada elemento.
-
-### Paso 2. Validar cada cobertura
-
-`items` contiene un subesquema de objeto. Cada cobertura requiere `clave` y
-`limite`; el límite debe ser numérico y no negativo. Todos los elementos deben
-satisfacer el mismo subesquema.
-
-### Paso 3. Conservar una variación legítima
-
-`beneficiario` no aparece en el `required` de la póliza. Su ausencia es válida.
-Cuando está presente, debe ser un objeto con `personaId` y `parentesco`.
-
-### Paso 4. Contrastar las pruebas
-
-Se aceptan una póliza sin beneficiario y otra con un beneficiario completo. Se
-rechazan un arreglo vacío, una cobertura sin límite y un beneficiario presente
-pero incompleto.
-
-## 7. Resultado esperado
-
-- `VAL-POL-01` y `VAL-POL-02` son aceptadas.
-- `VAL-POL-03` es rechazada porque `coberturas` está vacío.
-- `VAL-POL-04` es rechazada porque un elemento no contiene `limite`.
-- `VAL-POL-05` es rechazada porque `beneficiario` no contiene `parentesco`.
-- La colección termina con dos documentos.
-
-## 8. Interpretación
+#### Interpretación
 
 La regla del arreglo se aplica a cada elemento, no sólo al primero. La
-opcionalidad se decide en el nivel de la póliza: omitir `beneficiario` es válido,
-pero incluirlo activa las reglas de su subesquema. El validador protege la forma
-y algunas restricciones locales; no comprueba por sí mismo la suficiencia de
-las coberturas ni la identidad real de una persona.
+opcionalidad se decide en el nivel de la póliza: omitir `beneficiario` es
+válido, pero incluirlo activa las reglas de su subesquema. El validador protege
+forma y restricciones locales; no comprueba suficiencia de coberturas ni
+identidades reales.
 
-## 9. Relación con el Reto 04
+#### Relación con el Reto 04
 
-El reto traslada estas decisiones a documentos de siniestros y solicita construir
-el validador, ejecutar casos positivos y negativos e interpretar cada rechazo.
+El reto trasladará estas decisiones a documentos de siniestros. Deberás
+construir el validador, ejecutar casos positivos y negativos e interpretar cada
+resultado.
 
-## Compatibilidad
+#### Compatibilidad
 
-El ejemplo utiliza capacidades de validación disponibles en MongoDB Community
-4.4 y 7.0. El detalle de los errores debe comprobarse por separado antes de
-trasladar la solución a Amazon DocumentDB.
+El ejemplo utiliza capacidades disponibles en MongoDB Community 4.4 y 7.0. El
+comportamiento del validador debe verificarse por separado antes de trasladar
+la solución a Amazon DocumentDB.
+
+<br/>
+
+[`Anterior`](../ejemplo07/README.md) | [`Reto 04`](../../../retos/semana02/reto04/README.md)
+
+</div>

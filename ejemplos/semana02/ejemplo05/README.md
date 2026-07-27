@@ -1,105 +1,196 @@
-# Ejemplo 05: comparar una consulta antes y después de indexar
+[`Conceptos avanzados de bases de datos NoSQL`](../../../README.md) > [`Semana 02`](../README.md) > `Ejemplo 05`
 
-## 1. Objetivos
+## Ejemplo 05: Comparar una consulta antes y después de indexar
+
+<div style="text-align: justify;">
+
+### 1. Objetivos :dart:
 
 - Leer un plan de ejecución con `explain("executionStats")`.
 - Distinguir un recorrido `COLLSCAN` de un acceso mediante `IXSCAN`.
 - Comparar documentos, claves y resultados antes y después de crear un índice.
 - Relacionar el índice con una consulta por estado y fecha de inicio.
 
-## 2. Requisitos
+### 2. Requisitos :clipboard:
 
 - Haber revisado la Nota 03.
 - Continuar en la terminal integrada del Learner Lab.
-- Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
-  `bash setup/setup.sh` desde la raíz del repositorio.
+- Conservar el repositorio y las herramientas preparados durante la semana 1.
 
-## 3. Contexto del problema
+### 3. Desarrollo :rocket:
 
-Se requieren las pólizas vigentes cuya fecha de inicio sea igual o posterior al
-1 de enero de 2026. La demostración ejecuta exactamente la misma consulta antes
-y después de crear un índice sobre `estado` y `vigencia.inicio`.
+#### Actualizar el repositorio
 
-El propósito no es comparar tiempos con seis documentos, sino observar cómo
-cambian la estrategia y el trabajo registrado por el motor.
-
-## 4. Datos utilizados
-
-Se reutiliza la colección base `polizas`, con seis documentos sintéticos. El
-lanzador restablece los datos y elimina los índices secundarios de la colección
-para que la primera medición comience sin la estructura que se evaluará.
-
-## 5. Ejecución de la demostración
-
-Desde la terminal Bash del Learner Lab:
+Antes de comenzar el primer ejemplo de la sesión, actualiza la copia utilizada
+en la clase anterior. Desde la terminal integrada del Learner Lab, ejecuta una
+línea a la vez:
 
 ```bash
 cd ~/m6-nosql
+git pull --ff-only
 pwd
-bash ejemplos/semana02/ejemplo05/scripts/ejecutar.sh
+ls
 ```
 
-`pwd` debe mostrar una ruta terminada en `/m6-nosql`. El lanzador
-ejecuta
-[`consultas/comparar_antes_despues.js`](consultas/comparar_antes_despues.js)
-después de iniciar MongoDB y restablecer los datos base.
+`git pull --ff-only` incorpora los cambios publicados antes de la clase sin
+crear otra copia del repositorio. La actualización fue correcta si aparece
+`Already up-to-date.` o un resumen de avance sin errores. `pwd` debe terminar
+en `/m6-nosql` y `ls` debe mostrar `datos`, `ejemplos`, `retos` y `setup`.
 
-## 6. Desarrollo guiado
+Si `cd` indica que la carpeta no existe o la actualización muestra un error,
+conserva el mensaje y comunícalo al docente. No ejecutes `git clone` nuevamente.
 
-### Paso 1. Fijar el patrón de consulta
+#### Contexto del problema
 
-El filtro combina una igualdad sobre `estado` y un rango inferior sobre el campo
-anidado `vigencia.inicio`. La consulta devuelve tres pólizas.
+Se requieren las pólizas vigentes cuya fecha de inicio sea igual o posterior al
+1 de enero de 2026. Ejecutaremos exactamente la misma consulta antes y después
+de crear un índice sobre `estado` y `vigencia.inicio`.
 
-### Paso 2. Registrar el plan inicial
+Con seis documentos no tiene sentido competir por milisegundos. La comparación
+se concentra en el camino elegido por el motor y en las cantidades examinadas.
 
-Sin un índice secundario, el plan muestra `COLLSCAN`. Se examinan los seis
-documentos de la colección para devolver tres; no se examinan claves porque no
-existe un índice usado por la consulta.
+#### Preparar los datos y abrir la consola
 
-### Paso 3. Crear un índice correspondiente al patrón
+La demostración reutiliza la colección base `polizas`. Desde la raíz del
+repositorio, restablece los datos y abre la consola:
 
-El índice `{ estado: 1, "vigencia.inicio": 1 }` organiza primero las pólizas por
-estado y después por fecha dentro de cada estado. Su nombre explícito permite
-identificarlo en el plan.
+```bash
+bash setup/setup.sh
+bash setup/conectar.sh
+```
 
-### Paso 4. Repetir la misma medición
+Cuando aparezca el indicador `m6_nosql>` o `>`, las instrucciones siguientes se
+escriben directamente en la consola de MongoDB.
 
-La segunda ejecución conserva filtro y proyección. El plan incorpora `IXSCAN` y
-el nombre `estado_1_vigencia_inicio_1`. La comparación es válida porque sólo
-cambió la disponibilidad del índice.
+#### Paso 1. Fijar la consulta
 
-## 7. Resultado esperado
+Comienza eliminando únicamente los índices secundarios que pudieran quedar de
+otra ejecución. Después conserva el filtro en una variable y comprueba la
+respuesta:
 
-Con la versión de MongoDB Community instalada por `setup.sh` y los datos del
-curso, el resumen muestra:
+```javascript
+db.polizas.dropIndexes()
+
+var consulta = {
+  estado: "vigente",
+  "vigencia.inicio": {
+    $gte: ISODate("2026-01-01T00:00:00Z")
+  }
+}
+
+db.polizas.find(
+  consulta,
+  { _id: 1, estado: 1, "vigencia.inicio": 1 }
+).sort({ _id: 1 }).toArray()
+```
+
+La consulta devuelve `POL-1001`, `POL-1002` y `POL-1005`. Conviene fijar esta
+respuesta antes de medir: el índice podrá cambiar el acceso, pero no los
+documentos que satisfacen el filtro.
+
+#### Paso 2. Registrar el plan inicial
+
+Solicita al motor el plan ejecutado y conserva la explicación:
+
+```javascript
+var antes = db.polizas.find(consulta).explain("executionStats")
+
+antes.queryPlanner.winningPlan
+
+({
+  nReturned: antes.executionStats.nReturned,
+  totalKeysExamined: antes.executionStats.totalKeysExamined,
+  totalDocsExamined: antes.executionStats.totalDocsExamined
+})
+```
+
+En el árbol del plan aparece `COLLSCAN`. El resumen indica tres documentos
+devueltos, cero claves examinadas y seis documentos examinados. Cero claves no
+significa cero trabajo: todavía no existe un índice secundario que recorrer.
+
+#### Paso 3. Crear un índice correspondiente al patrón
+
+La consulta contiene una igualdad y un rango. Crea un índice que organice
+primero por estado y después por fecha dentro de cada estado:
+
+```javascript
+db.polizas.createIndex(
+  { estado: 1, "vigencia.inicio": 1 },
+  { name: "estado_1_vigencia_inicio_1" }
+)
+
+db.polizas.getIndexes()
+```
+
+La salida debe incluir `_id_` y `estado_1_vigencia_inicio_1`. Nombrar el índice
+permite reconocerlo sin ambigüedad en el plan.
+
+#### Paso 4. Repetir la misma medición
+
+No cambies `consulta`. Vuelve a solicitar la explicación y recupera las mismas
+métricas:
+
+```javascript
+var despues = db.polizas.find(consulta).explain("executionStats")
+
+despues.queryPlanner.winningPlan
+
+({
+  nReturned: despues.executionStats.nReturned,
+  totalKeysExamined: despues.executionStats.totalKeysExamined,
+  totalDocsExamined: despues.executionStats.totalDocsExamined
+})
+```
+
+Ahora el árbol contiene `IXSCAN` con el índice
+`estado_1_vigencia_inicio_1`, acompañado de `FETCH`. Se devuelven los mismos
+tres documentos, pero se examinan tres claves y tres documentos.
 
 | Indicador | Antes | Después |
 |---|---:|---:|
-| Acceso | `COLLSCAN` | `IXSCAN` acompañado de `FETCH` |
+| Acceso | `COLLSCAN` | `IXSCAN` y `FETCH` |
 | Documentos devueltos | 3 | 3 |
 | Claves examinadas | 0 | 3 |
 | Documentos examinados | 6 | 3 |
 
-Las pólizas devueltas son `POL-1001`, `POL-1002` y `POL-1005`.
+#### Recapitulación en un archivo `.js`
 
-## 8. Interpretación
+Una vez razonados y comprobados ambos planes en la consola, el archivo
+[`consultas/comparar_antes_despues.js`](consultas/comparar_antes_despues.js)
+reúne el recorrido completo y presenta un resumen estable. No introduce otro
+lenguaje: conserva las instrucciones de MongoDB que acabamos de ejecutar.
 
-El índice no cambia la respuesta: reduce el conjunto que debe examinarse para
-producirla. La colección es deliberadamente pequeña, así que
-`executionTimeMillis` no permite afirmar una mejora general de tiempo. La
-evidencia útil de esta demostración está en el tipo de acceso y en las cantidades
-examinadas.
+Escribe `exit` para regresar a Bash y ejecútalo desde `~/m6-nosql`:
 
-## 9. Relación con el Reto 03
+```bash
+bash ejemplos/semana02/ejemplo05/scripts/ejecutar.sh
+```
 
-El reto solicita leer varios planes y proponer una estrategia que atienda más de
-un patrón de consulta. La propuesta y su justificación pertenecen al reto, no a
-esta demostración.
+El lanzador restablece los datos, elimina los índices secundarios y reproduce
+la comparación. Úsalo para confirmar el recorrido, no para sustituir la
+construcción razonada en la consola.
 
-## Compatibilidad
+#### Interpretación
+
+El índice no cambia la respuesta; reduce el conjunto que debe examinarse para
+producirla. `executionTimeMillis` puede variar y, con una colección didáctica,
+no demuestra una mejora general de tiempo. La evidencia pertinente está en el
+tipo de acceso y en las cantidades examinadas.
+
+#### Relación con el Reto 03
+
+El reto solicitará leer tres planes y proponer una estrategia que atienda más
+de un patrón con un máximo de dos índices. La propuesta pertenece al reto; este
+ejemplo sólo establece cómo realizar una comparación controlada.
+
+#### Compatibilidad
 
 La demostración se ejecuta sobre MongoDB Community 4.4 o 7.0, según la imagen
-detectada. Un plan obtenido aquí no debe presentarse como evidencia de Amazon
-DocumentDB: el árbol de etapas y las métricas deben comprobarse en el motor
-donde se ejecutará la consulta.
+detectada. El árbol de etapas y sus métricas deben comprobarse nuevamente si la
+consulta se traslada a Amazon DocumentDB.
+
+<br/>
+
+[`← Semana 02`](../README.md) | [`Siguiente`](../ejemplo06/README.md)
+
+</div>

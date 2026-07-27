@@ -1,18 +1,24 @@
-# Reto 04: construir y probar reglas de validación
+[`Conceptos avanzados de bases de datos NoSQL`](../../../README.md) > [`Semana 02`](../../../ejemplos/semana02/README.md) > `Reto 04`
 
-## 1. Objetivo
+## Reto 04: Construir y probar reglas de validación
+
+<div style="text-align: justify;">
+
+### 1. Objetivos :dart:
 
 Construir un validador para una colección de siniestros y demostrar su
 funcionamiento mediante documentos válidos e inválidos.
 
-## 2. Requisitos
+### 2. Requisitos :clipboard:
 
 - Haber revisado la Nota 04 y las demostraciones de los ejemplos 07 y 08.
 - Continuar en la terminal integrada del Learner Lab.
 - Haber clonado `https://github.com/manu-msr/M6-NOSQL` y ejecutado
   `bash setup/setup.sh` desde la raíz del repositorio.
 
-## 3. Situación
+### 3. Desarrollo :rocket:
+
+#### Situación
 
 La colección `siniestros_validacion_reto` recibirá documentos con estos
 requisitos:
@@ -30,7 +36,7 @@ requisitos:
 La regla se incorporará a una colección ya creada mediante `collMod`, con nivel
 `strict` y acción `error`.
 
-## 4. Preparar la colección
+#### Preparar la colección
 
 Desde la terminal Bash del Learner Lab:
 
@@ -57,7 +63,7 @@ db.getCollectionInfos({ name: "siniestros_validacion_reto" })[0].options
 
 La salida inicial no debe contener `validator`. `exit` cierra la consola.
 
-## 5. Preparar los archivos de trabajo
+#### Preparar los archivos de trabajo
 
 Desde la raíz del repositorio:
 
@@ -79,7 +85,7 @@ mismo procedimiento se usa con `respuestas_reto04.md`. Si aparece
 `nano: command not found`, se conserva el mensaje y se comunica al docente antes
 de utilizar otro editor.
 
-## 6. Consigna del validador
+#### Construir el validador
 
 En `validador_reto04.js` se completa únicamente el objeto `esquema`. Debe usar
 las palabras clave estudiadas en la Nota 04 para representar todos los
@@ -96,7 +102,7 @@ requisitos de la situación:
 La plantilla aplica el esquema mediante `collMod`, elimina los documentos de una
 ejecución anterior y realiza ocho pruebas sin modificar sus casos.
 
-## 7. Ejecutar y comprobar
+#### Ejecutar y comprobar
 
 Desde la raíz del repositorio:
 
@@ -117,7 +123,7 @@ bash setup/setup.sh
 bash retos/semana02/reto04/scripts/cargar_datos.sh
 ```
 
-## 8. Interpretación requerida
+#### Interpretar las pruebas
 
 En `respuestas_reto04.md` se registra para cada documento de prueba:
 
@@ -131,7 +137,7 @@ En `respuestas_reto04.md` se registra para cada documento de prueba:
 No se utiliza el texto completo del error como única explicación: el análisis
 debe relacionar cada caso con la regla declarada.
 
-## 9. Producto breve esperado
+#### Producto breve esperado
 
 La entrega contiene solamente:
 
@@ -142,7 +148,7 @@ La entrega contiene solamente:
 
 No se requiere un reporte extenso ni se incluyen datos personales reales.
 
-## 10. Criterios de revisión
+#### Criterios de revisión
 
 - El esquema representa todos los requisitos sin volver obligatorio `aviso`.
 - Los tipos BSON, dominios y mínimos son correctos.
@@ -152,20 +158,21 @@ No se requiere un reporte extenso ni se incluyen datos personales reales.
 - La evidencia es reproducible y no depende del texto interno completo del
   mensaje de error.
 
-## 11. Relación con los ejemplos
+#### Relación con los ejemplos
 
 - El Ejemplo 07 separa presencia, tipo y mínimo en un siniestro.
 - El Ejemplo 08 muestra arreglos, subesquemas y opcionalidad.
 - El reto integra esas reglas y las aplica mediante `collMod` a otra colección.
 
-## Compatibilidad
+#### Compatibilidad
 
 El reto se ejecuta y evalúa sobre MongoDB Community 4.4 o 7.0, según la imagen
 detectada. No se presupone que Amazon DocumentDB admita la misma configuración
 o devuelva el mismo detalle de errores; cualquier traslado requiere
 verificación independiente.
 
-## Nota docente
+<br/>
 
-La carpeta `solucion_docente` se mantiene fuera de la versión del repositorio
-que se distribuya al estudiantado.
+[`Ejemplo 08`](../../../ejemplos/semana02/ejemplo08/README.md) | [`← Semana 02`](../../../ejemplos/semana02/README.md)
+
+</div>
