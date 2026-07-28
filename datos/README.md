@@ -25,11 +25,18 @@ en los ejemplos 05 y 06 para comparar planes e índices.
 [`semana02/README.md`](semana02/README.md) documenta las colecciones temporales
 de validación y los conjuntos independientes de los retos 03 y 04.
 
+## Semana 3
+
+[`semana03/README.md`](semana03/README.md) documenta bienes, zonas y siniestros
+con geometrías GeoJSON para los ejemplos 09 a 12. Los retos 05 y 06 utilizan
+conjuntos geoespaciales independientes.
+
 ## Evolución
 
 - Semana 1: modelo documental, consultas y agregaciones.
 - Semana 2: indexación sobre `polizas` y colecciones independientes para los
   retos de rendimiento y validación.
+- Semana 3: puntos, polígonos, índices `2dsphere` y análisis territorial.
 - Semanas posteriores: podrán añadirse campos o colecciones sin modificar el
   significado de los identificadores existentes.
 
