@@ -31,12 +31,20 @@ de validación y los conjuntos independientes de los retos 03 y 04.
 con geometrías GeoJSON para los ejemplos 09 a 12. Los retos 05 y 06 utilizan
 conjuntos geoespaciales independientes.
 
+## Semana 4
+
+[`semana04/README.md`](semana04/README.md) documenta exposiciones periódicas,
+movimientos irregulares y siniestros con marcas de tiempo para los ejemplos 13
+a 16. Los retos 07 y 08 utilizan conjuntos temporales independientes.
+
 ## Evolución
 
 - Semana 1: modelo documental, consultas y agregaciones.
 - Semana 2: indexación sobre `polizas` y colecciones independientes para los
   retos de rendimiento y validación.
 - Semana 3: puntos, polígonos, índices `2dsphere` y análisis territorial.
+- Semana 4: marcas de tiempo, metadatos de serie, intervalos, exposición e
+  indicadores por periodo.
 - Semanas posteriores: podrán añadirse campos o colecciones sin modificar el
   significado de los identificadores existentes.
 

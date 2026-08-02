@@ -19,6 +19,6 @@ de un proyecto de aplicación.
 - 📄 **[Semana 01: Documentos, consultas y agregaciones](ejemplos/semana01/README.md)**
 - ⚡ **[Semana 02: Rendimiento y calidad de los datos](ejemplos/semana02/README.md)**
 - 🗺️ **[Semana 03: Datos en el mapa: consultas geoespaciales](ejemplos/semana03/README.md)**
-- ⏱️ **Semana 04:** Series de tiempo
+- ⏱️ **[Semana 04: Datos a través del tiempo: series temporales](ejemplos/semana04/README.md)**
 - 🔎 **Semana 05:** Búsqueda y protección de la información
 - 🚀 **Semana 06:** Integración y presentación del proyecto
