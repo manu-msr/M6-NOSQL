@@ -37,6 +37,13 @@ conjuntos geoespaciales independientes.
 movimientos irregulares y siniestros con marcas de tiempo para los ejemplos 13
 a 16. Los retos 07 y 08 utilizan conjuntos temporales independientes.
 
+## Semana 5
+
+[`semana05/README.md`](semana05/README.md) documenta avisos para búsqueda
+textual y casos con campos sintéticos clasificados para los ejemplos 17 a 20.
+Los retos 09 y 10 utilizan conjuntos independientes para elegir estrategias de
+búsqueda y diseñar controles de acceso y protección.
+
 ## Evolución
 
 - Semana 1: modelo documental, consultas y agregaciones.
@@ -45,6 +52,7 @@ a 16. Los retos 07 y 08 utilizan conjuntos temporales independientes.
 - Semana 3: puntos, polígonos, índices `2dsphere` y análisis territorial.
 - Semana 4: marcas de tiempo, metadatos de serie, intervalos, exposición e
   indicadores por periodo.
+- Semana 5: términos, patrones, perfiles, vistas y reducción de datos sensibles.
 - Semanas posteriores: podrán añadirse campos o colecciones sin modificar el
   significado de los identificadores existentes.
 
